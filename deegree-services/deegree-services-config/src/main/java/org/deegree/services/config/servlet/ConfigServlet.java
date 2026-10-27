@@ -219,17 +219,27 @@ public class ConfigServlet extends HttpServlet {
 
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		token.validate(req);
-		String path = req.getPathInfo();
-		if (path == null || path.equals("/")) {
-			IOUtils.write("No action specified.\n", resp.getOutputStream());
-			return;
+		try {
+			token.validate(req);
+			String path = req.getPathInfo();
+			if (path == null || path.equals("/")) {
+				IOUtils.write("No action specified.\n", resp.getOutputStream());
+				return;
+			}
+			if (path.startsWith("/upload")) {
+				upload(path.substring(7), req, resp);
+			}
+			if (path.startsWith("/crs")) {
+				dispatch(path, req, resp);
+			}
 		}
-		if (path.startsWith("/upload")) {
-			upload(path.substring(7), req, resp);
+		catch (SecurityException e) {
+			resp.setStatus(403);
+			IOUtils.write("There were security concerns: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
 		}
-		if (path.startsWith("/crs")) {
-			dispatch(path, req, resp);
+		catch (Throwable e) {
+			resp.setStatus(500);
+			IOUtils.write("Error while processing request: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
 		}
 	}
 
