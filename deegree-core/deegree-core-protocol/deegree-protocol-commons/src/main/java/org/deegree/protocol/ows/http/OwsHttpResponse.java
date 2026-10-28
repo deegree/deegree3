@@ -39,7 +39,7 @@ import java.io.Closeable;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.http.HttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 
 /**
@@ -56,7 +56,7 @@ public interface OwsHttpResponse extends Closeable {
 	 * Provides access to the raw response.
 	 * @return http response, never <code>null</code>
 	 */
-	public HttpResponse getAsHttpResponse();
+	public ClassicHttpResponse getAsHttpResponse();
 
 	/**
 	 * Provides access to the response body as a binary stream.

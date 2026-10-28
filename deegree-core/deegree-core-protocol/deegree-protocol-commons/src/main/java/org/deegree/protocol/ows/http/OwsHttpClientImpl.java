@@ -44,13 +44,15 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+/* No generic migration for classes in the `org.apache.http.params` package exists, please migrate manually */
 import org.apache.http.params.HttpConnectionParams;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.slf4j.Logger;
@@ -140,9 +142,9 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 
 			query = new URI(sb.toString());
 			HttpGet httpGet = new HttpGet(query);
-			DefaultHttpClient httpClient = getInitializedHttpClient(endPoint);
+			CloseableHttpClient httpClient = getInitializedHttpClient(endPoint);
 			LOG.debug("Performing GET request: {}", query);
-			HttpResponse httpResponse = httpClient.execute(httpGet);
+			ClassicHttpResponse httpResponse = httpClient.execute(httpGet);
 			response = new OwsHttpResponseImpl(httpResponse, httpClient.getConnectionManager(), sb.toString());
 		}
 		catch (Throwable e) {
@@ -160,13 +162,13 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 		OwsHttpResponse response = null;
 		try {
 			HttpPost httpPost = new HttpPost(endPoint.toURI());
-			DefaultHttpClient httpClient = getInitializedHttpClient(endPoint);
+			CloseableHttpClient httpClient = getInitializedHttpClient(endPoint);
 			LOG.debug("Performing POST request on {}", endPoint);
 			LOG.debug("post size: {}", body.size());
 			InputStreamEntity entity = new InputStreamEntity(body.getInputStream(), (long) body.size());
 			entity.setContentType(contentType);
 			httpPost.setEntity(entity);
-			HttpResponse httpResponse = httpClient.execute(httpPost);
+			ClassicHttpResponse httpResponse = httpClient.execute(httpPost);
 			response = new OwsHttpResponseImpl(httpResponse, httpClient.getConnectionManager(), endPoint.toString());
 		}
 		catch (Throwable e) {
@@ -176,30 +178,30 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 		return response;
 	}
 
-	private DefaultHttpClient getInitializedHttpClient(URL url) {
-		DefaultHttpClient client = new DefaultHttpClient();
+	private CloseableHttpClient getInitializedHttpClient(URL url) {
+		CloseableHttpClient client = HttpClients.createDefault();
 		setTimeouts(client);
 		setProxies(url, client);
 		setCredentials(url, client);
 		return client;
 	}
 
-	private void setProxies(URL url, DefaultHttpClient client) {
+	private void setProxies(URL url, CloseableHttpClient client) {
 		String host = url.getHost();
 		String protocol = url.getProtocol().toLowerCase();
 		handleProxies(protocol, client, host);
 	}
 
-	private void setTimeouts(DefaultHttpClient client) {
+	private void setTimeouts(CloseableHttpClient client) {
 		HttpConnectionParams.setConnectionTimeout(client.getParams(), connectionTimeoutMillis);
 		HttpConnectionParams.setSoTimeout(client.getParams(), readTimeoutMillis);
 	}
 
-	private void setCredentials(URL url, DefaultHttpClient client) {
+	private void setCredentials(URL url, CloseableHttpClient client) {
 		if (user != null) {
 			client.getCredentialsProvider()
 				.setCredentials(new AuthScope(url.getHost(), url.getPort()),
-						new UsernamePasswordCredentials(user, pass));
+						new UsernamePasswordCredentials(user, pass.toCharArray()));
 		}
 	}
 
