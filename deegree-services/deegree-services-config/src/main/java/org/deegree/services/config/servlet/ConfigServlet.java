@@ -82,60 +82,7 @@ public class ConfigServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String path = req.getPathInfo();
 		if (path == null || path.equals("/")) {
-			StringBuilder data = new StringBuilder("No action specified.\n\nAvailable actions:\n");
-			data.append(
-					"GET /config/download[/path]                                  - download currently running workspace or file in workspace\n");
-			data.append(
-					"GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace\n");
-			data.append(
-					"GET /config/restart                                          - restart currently running workspace\n");
-			data.append(
-					"GET /config/restart[/path]                                   - restarts all resources connected to the specified one\n");
-			data.append(
-					"GET /config/restart/wsname                                   - restart with workspace <wsname>\n");
-			data.append(
-					"GET /config/update                                           - rescan config files and update resources\n");
-			data.append(
-					"GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources\n");
-			data.append(
-					"GET /config/listworkspaces                                   - list available workspace names\n");
-			data.append(
-					"GET /config/listfonts                                        - list currently available fonts on the server\n");
-			data.append(
-					"GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n");
-			data.append(
-					"GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n");
-			data.append(
-					"GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n");
-			data.append(
-					"GET /config/crs/list                                         - list available CRS definitions\n");
-			data.append(
-					"GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n");
-			data.append(
-					"GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace. Only the active workspace can be validated.\n");
-			data.append(
-					"GET /config/update/bboxcache[?featureStoreId=]               - recalculates the bounding boxes of all feature stores of the currently running workspace, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n");
-			data.append(
-					"GET /config/update/bboxcache/wsname[?featureStoreId=]        - recalculates the bounding boxes of all feature stores of the workspace with name <wsname>, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n");
-			data.append(
-					"POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n");
-			data.append(
-					"GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n");
-			data.append("PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n");
-			data.append(
-					"PUT /config/upload/path/file                                 - upload file into current workspace\n");
-			data.append(
-					"PUT /config/upload/wsname/path/file                          - upload file into workspace with name <wsname>\n");
-			data.append(
-					"DELETE /config/delete[/path]                                 - delete currently running workspace or file in workspace\n");
-			data.append(
-					"DELETE /config/delete/wsname[/path]                          - delete workspace with name <wsname> or file in workspace\n");
-			data.append("\nHTTP response codes used:\n");
-			data.append("200 - ok\n");
-			data.append("403 - if you tried something you shouldn't have\n");
-			data.append("404 - if a file or directory needed to fulfill a request was not found\n");
-			data.append("500 - if something serious went wrong on the server side\n");
-			IOUtils.write(data.toString(), resp.getOutputStream());
+			writeAvailableActionsTo(resp);
 			return;
 		}
 
@@ -150,6 +97,60 @@ public class ConfigServlet extends HttpServlet {
 			resp.setStatus(500);
 			IOUtils.write("Error while processing request: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
 		}
+	}
+
+	private void writeAvailableActionsTo(HttpServletResponse resp) throws IOException {
+		StringBuilder data = new StringBuilder("No action specified.\n\nAvailable actions:\n");
+		data.append(
+				"GET /config/download[/path]                                  - download currently running workspace or file in workspace\n");
+		data.append(
+				"GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace\n");
+		data.append(
+				"GET /config/restart                                          - restart currently running workspace\n");
+		data.append(
+				"GET /config/restart[/path]                                   - restarts all resources connected to the specified one\n");
+		data.append("GET /config/restart/wsname                                   - restart with workspace <wsname>\n");
+		data.append(
+				"GET /config/update                                           - rescan config files and update resources\n");
+		data.append(
+				"GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources\n");
+		data.append("GET /config/listworkspaces                                   - list available workspace names\n");
+		data.append(
+				"GET /config/listfonts                                        - list currently available fonts on the server\n");
+		data.append(
+				"GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n");
+		data.append(
+				"GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n");
+		data.append(
+				"GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n");
+		data.append("GET /config/crs/list                                         - list available CRS definitions\n");
+		data.append(
+				"GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n");
+		data.append(
+				"GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace. Only the active workspace can be validated.\n");
+		data.append(
+				"GET /config/update/bboxcache[?featureStoreId=]               - recalculates the bounding boxes of all feature stores of the currently running workspace, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n");
+		data.append(
+				"GET /config/update/bboxcache/wsname[?featureStoreId=]        - recalculates the bounding boxes of all feature stores of the workspace with name <wsname>, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n");
+		data.append(
+				"POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n");
+		data.append(
+				"GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n");
+		data.append("PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n");
+		data.append(
+				"PUT /config/upload/path/file                                 - upload file into current workspace\n");
+		data.append(
+				"PUT /config/upload/wsname/path/file                          - upload file into workspace with name <wsname>\n");
+		data.append(
+				"DELETE /config/delete[/path]                                 - delete currently running workspace or file in workspace\n");
+		data.append(
+				"DELETE /config/delete/wsname[/path]                          - delete workspace with name <wsname> or file in workspace\n");
+		data.append("\nHTTP response codes used:\n");
+		data.append("200 - ok\n");
+		data.append("403 - if you tried something you shouldn't have\n");
+		data.append("404 - if a file or directory needed to fulfill a request was not found\n");
+		data.append("500 - if something serious went wrong on the server side\n");
+		IOUtils.write(data.toString(), resp.getOutputStream());
 	}
 
 	private void dispatch(String path, HttpServletRequest req, HttpServletResponse resp)
@@ -218,16 +219,27 @@ public class ConfigServlet extends HttpServlet {
 
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String path = req.getPathInfo();
-		if (path == null || path.equals("/")) {
-			IOUtils.write("No action specified.\n", resp.getOutputStream());
-			return;
+		try {
+			token.validate(req);
+			String path = req.getPathInfo();
+			if (path == null || path.equals("/")) {
+				IOUtils.write("No action specified.\n", resp.getOutputStream());
+				return;
+			}
+			if (path.startsWith("/upload")) {
+				upload(path.substring(7), req, resp);
+			}
+			if (path.startsWith("/crs")) {
+				dispatch(path, req, resp);
+			}
 		}
-		if (path.startsWith("/upload")) {
-			upload(path.substring(7), req, resp);
+		catch (SecurityException e) {
+			resp.setStatus(403);
+			IOUtils.write("There were security concerns: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
 		}
-		if (path.startsWith("/crs")) {
-			dispatch(path, req, resp);
+		catch (Throwable e) {
+			resp.setStatus(500);
+			IOUtils.write("Error while processing request: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
 		}
 	}
 
