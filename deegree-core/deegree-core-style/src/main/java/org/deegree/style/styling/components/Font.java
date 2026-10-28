@@ -145,8 +145,8 @@ public class Font implements Copyable<Font> {
 		copy.strikethroughWidth = strikethroughWidth;
 		copy.strikethroughOffset = strikethroughOffset;
 		copy.underline = underline;
-		copy.underlineWidth = underlineOffset;
-		copy.underlineOffset = underlineWidth;
+		copy.underlineWidth = underlineWidth;
+		copy.underlineOffset = underlineOffset;
 		return copy;
 	}
 
