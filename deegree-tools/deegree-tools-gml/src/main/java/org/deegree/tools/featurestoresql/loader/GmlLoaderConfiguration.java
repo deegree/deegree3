@@ -28,25 +28,25 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
+import org.springframework.batch.core.listener.StepExecutionListener;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.step.builder.SimpleStepBuilder;
+import org.springframework.batch.core.step.Step;
+import org.springframework.batch.core.step.builder.ChunkOrientedStepBuilder;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.MultiResourceItemReader;
-import org.springframework.batch.item.support.AbstractItemStreamItemReader;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
+import org.springframework.batch.infrastructure.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.file.MultiResourceItemReader;
+import org.springframework.batch.infrastructure.item.support.AbstractItemStreamItemReader;
+import org.springframework.batch.infrastructure.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.PathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -55,7 +55,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,7 +92,7 @@ public class GmlLoaderConfiguration {
 	@Bean
 	public ReportWriter reportWriter(Summary summary,
 			@Value("#{jobParameters['reportFile'] ?: 'GmlLoader.log'}") String fileName) {
-		Path outputFile = Paths.get(fileName);
+		Path outputFile = Path.of(fileName);
 		return new ReportWriter(summary, outputFile);
 	}
 
@@ -110,19 +109,18 @@ public class GmlLoaderConfiguration {
 			throw new IllegalArgumentException("Specify file to read or file with list of files only!");
 		}
 		else if (pathToFile != null) {
-			gmlReader.setResource(new PathResource(pathToFile));
+			gmlReader.setResource(new FileSystemResource(pathToFile));
 			return gmlReader;
 		}
 		else {
-			MultiResourceItemReader<Feature> reader = new MultiResourceItemReader<Feature>();
-			reader.setDelegate(gmlReader);
+			MultiResourceItemReader<Feature> reader = new MultiResourceItemReader<Feature>(gmlReader);
 			List<Resource> resources;
 			try {
-				resources = Files.lines(Paths.get(pathToList)) //
+				resources = Files.lines(Path.of(pathToList)) //
 					.filter(Objects::nonNull) //
 					.filter(line -> !line.startsWith("#")) //
 					.filter(line -> !line.trim().isEmpty()) //
-					.map(PathResource::new) //
+					.map(FileSystemResource::new) //
 					.peek(pr -> {
 						if (!pr.exists()) {
 							final String msg = "The file " + pr.getDescription() + " in the list '" + pathToList
@@ -198,8 +196,9 @@ public class GmlLoaderConfiguration {
 			@Value("#{jobParameters['chunkSize']}") Integer chunkSize,
 			@Value("#{jobParameters['skipReferenceCheck'] ?: false}") boolean skipReferenceCheck) {
 		int chunk = chunkSize != null && chunkSize.intValue() > 10 ? chunkSize.intValue() : 10;
-		SimpleStepBuilder<Feature, Feature> builder = new StepBuilder("gmlLoaderStep", jobRepository)
-			.<Feature, Feature>chunk(chunk, transactionManager);
+		ChunkOrientedStepBuilder<Feature, Feature> builder = new StepBuilder("gmlLoaderStep", jobRepository)
+			.<Feature, Feature>chunk(chunk)
+			.transactionManager(transactionManager);
 		builder.reader(gmlReader);
 		if (skipReferenceCheck) {
 			LOG.warn("The feature reference check will be skipped.");

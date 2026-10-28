@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import org.deegree.feature.Feature;
 import org.junit.Test;
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
