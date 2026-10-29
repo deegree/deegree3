@@ -36,13 +36,13 @@ package org.deegree.console.connection.sql;
 
 import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
-import static org.deegree.client.core.utils.ActionParams.getParam1;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import org.deegree.client.core.utils.ActionParams;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -61,12 +61,15 @@ import java.io.Serializable;
 @SessionScoped
 public class ConnectionTester implements Serializable {
 
+	@Inject
+	private ActionParams params;
+
 	private Workspace getWorkspace() {
 		return WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 	}
 
 	public void test() {
-		String id = (String) getParam1();
+		String id = (String) params.getParam1();
 		try {
 			ConnectionProvider prov = getWorkspace().getResource(ConnectionProviderProvider.class, id);
 			prov.getConnection().close();
@@ -81,7 +84,7 @@ public class ConnectionTester implements Serializable {
 	}
 
 	public String testAndSave() {
-		String id = (String) getParam1();
+		String id = (String) params.getParam1();
 		try {
 			ConnectionProvider prov = getWorkspace().getResource(ConnectionProviderProvider.class, id);
 			prov.getConnection().close();
