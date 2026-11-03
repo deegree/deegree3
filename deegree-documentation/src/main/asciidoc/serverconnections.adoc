@@ -361,6 +361,56 @@ the element _DialectProvider_:
 org.deegree.sqldialect.postgis.PostGISDialectProvider)
 |===
 
+===== SQL/MM Part 3 - Curves support
+
+Starting with version 3.6.15 deegree includes an optional preview of a new PostGIS dialect variant that supports its
+extended Well-Known Binary (EWKB) format. This support for EWKB makes it possible to use _SQL/MM Part 3 - Curves_
+geometries, precisely _CircularString_, _CompoundCurve_, _CurvePolygon_, _MultiCurve_ and _MultiSurface_.
+This also includes support for 3D (XYZ or XYM) and 4D (XYZM) geometries, whereby Z and M are interpreted as the third
+or forth ordinate dimension, as needed.
+
+NOTE: This extended PostGIS dialect is currently a preview and might change until it becomes the default.
+Therefore, it is not active by default to prevent a change in behavior for existing setups.
+Furthermore, it is planned that the extended dialect will become the default in a future release.
+
+To enable the extended dialect the following line has to be added to the database connection config:
+
+[source,xml]
+----
+<!--...-->
+<DialectProvider javaClass="org.deegree.sqldialect.postgis.PostGISEWKBDialectProvider" />
+<!--...-->
+----
+
+The deegree geometry model has support for multidimensional coordinates, but the metadata if a third or fourth
+dimension has a specific meaning is part of the assigned reference systems to the geometry.
+On the other hand, the dialect needs to know how and if a third or forth dimensional coordinate should be converted.
+
+Therefore, by selecting one of the following dialect provider, this conversion can be selected:
+
+[cols="64,36",options="header",]
+|===
+|Java class |Conversion
+
+a|`org.deegree.sqldialect.postgis.PostGISEWKBDialectProvider`
+| Automatically converts to XY, XYZ or XYZM / 2-, 3-, or 4-dimensional depending on the number of ordinates.
+
+a|`org.deegree.sqldialect.postgis.PostGISEWKBDialectProviderXy`
+| All coordinates will be mapped to XY / 2-dimensional only. Provided third or fourth dimensions will be ignored.
+
+a|`org.deegree.sqldialect.postgis.PostGISEWKBDialectProviderXym`
+| All coordinates will be mapped to XYM / 3-dimensional only. Provided fourth dimensions will be ignored, and a
+missing third dimension will be filled with "not-a-number" values.
+
+a|`org.deegree.sqldialect.postgis.PostGISEWKBDialectProviderXyz`
+| All coordinates will be mapped to XYZ / 3-dimensional only. Provided fourth dimensions will be ignored, and a
+missing third dimension will be filled with "not-a-number" values.
+
+a|`org.deegree.sqldialect.postgis.PostGISEWKBDialectProviderXyzm`
+| All coordinates will be mapped to XYZM / 4-dimensional only. Any missing third or fourth dimension will be filled
+with "not-a-number" values.
+|===
+
 [[anchor-configuration-jdbc-cp]]
 ==== JDBC connection pools
 

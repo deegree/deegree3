@@ -332,4 +332,8 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 		return sql.toString();
 	}
 
+	boolean isUseLegacyPredicates() {
+		return useLegacyPredicates;
+	}
+
 }

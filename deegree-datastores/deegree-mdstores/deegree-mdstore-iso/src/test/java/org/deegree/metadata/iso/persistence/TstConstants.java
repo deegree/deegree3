@@ -37,7 +37,7 @@ package org.deegree.metadata.iso.persistence;
 import java.net.URL;
 
 /**
- * Constants
+ * Utils
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  */
