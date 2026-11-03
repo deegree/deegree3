@@ -36,16 +36,15 @@ package org.deegree.protocol.ows.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.ClientProtocolException;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-
-public class OwsResponseHandler implements ResponseHandler<InputStream> {
+public class OwsResponseHandler implements HttpClientResponseHandler<InputStream> {
 
 	@Override
-	public InputStream handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+	public InputStream handleResponse(ClassicHttpResponse response) throws ClientProtocolException, IOException {
 
 		// TODO error handling
 		HttpEntity entity = response.getEntity();

@@ -46,12 +46,11 @@ import java.util.Collections;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.conn.ClientConnectionManager;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.client5.http.ClientConnectionManager;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
@@ -72,7 +71,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
 
 	private static final XMLInputFactory xmlFac = XMLInputFactoryUtils.newSafeInstance();
 
-	private final HttpResponse httpResponse;
+	private final ClassicHttpResponse httpResponse;
 
 	private final ClientConnectionManager connManager;
 
@@ -88,7 +87,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
 	 * @throws IllegalStateException
 	 * @throws IOException
 	 */
-	OwsHttpResponseImpl(HttpResponse httpResponse, ClientConnectionManager connManager, String url)
+	OwsHttpResponseImpl(ClassicHttpResponse httpResponse, ClientConnectionManager connManager, String url)
 			throws IllegalStateException, IOException {
 		this.httpResponse = httpResponse;
 		this.connManager = connManager;
@@ -101,7 +100,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
 	}
 
 	@Override
-	public HttpResponse getAsHttpResponse() {
+	public ClassicHttpResponse getAsHttpResponse() {
 		return httpResponse;
 	}
 
@@ -134,7 +133,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
 
 	@Override
 	public void assertHttpStatus200() throws OWSExceptionReport {
-		StatusLine statusLine = httpResponse.getStatusLine();
+		StatusLine statusLine = new StatusLine(httpResponse);
 		int statusCode = statusLine.getStatusCode();
 		if (statusCode != 200) {
 			try {

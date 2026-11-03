@@ -46,8 +46,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import jakarta.xml.bind.JAXBElement;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+
 import javax.xml.namespace.QName;
-import org.apache.http.HttpResponse;
 import org.deegree.commons.json.JSONAdapter;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
@@ -124,8 +125,8 @@ public class FMEProcessProviderBuilder implements ResourceBuilder<ProcessProvide
 			map.put("expiration", "1");
 			map.put("timeunit", "hour");
 			LOG.debug("Sending {}", tokenurl);
-			Pair<String, HttpResponse> pair = postFullResponse(UTF8STRING, tokenurl, map, null, 0);
-			if (pair.second.getStatusLine().getStatusCode() == 401) {
+			Pair<String, ClassicHttpResponse> pair = postFullResponse(UTF8STRING, tokenurl, map, null, 0);
+			if (pair.second.getCode() == 401) {
 				throw new ResourceInitException(
 						"Could not authenticate against token service. " + "Check username/password in configuration.");
 			}
