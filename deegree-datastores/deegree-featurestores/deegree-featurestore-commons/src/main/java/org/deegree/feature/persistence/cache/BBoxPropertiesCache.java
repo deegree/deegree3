@@ -129,6 +129,9 @@ public class BBoxPropertiesCache implements BBoxCache {
 
 	@Override
 	public Envelope get(QName ftName) {
+		if (!contains(ftName)) {
+			throw new IllegalArgumentException("No envelope information for feature type '" + ftName + "' in cache.");
+		}
 		String s = ftName.toString();
 
 		// 1. ro:{namespace}name
@@ -142,9 +145,6 @@ public class BBoxPropertiesCache implements BBoxCache {
 			res = ftNameToEnvelope.get(s);
 		}
 
-		if (res == null) {
-			throw new IllegalArgumentException("No envelope information for feature type '" + ftName + "' in cache.");
-		}
 		return res;
 	}
 
