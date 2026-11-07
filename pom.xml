@@ -688,7 +688,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
-        <version>4.0.26</version>
+        <version>4.0.29</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -885,7 +885,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.13</version>
+        <version>42.7.14</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -1292,8 +1292,8 @@
     <batik.version>1.19</batik.version>
     <axiom.version>2.0.0</axiom.version>
     <jsonpath.version>2.10.0</jsonpath.version>
-    <jsonsmart.version>2.6.0</jsonsmart.version>
-    <primefaces.version>15.0.18</primefaces.version>
+    <jsonsmart.version>2.6.1</jsonsmart.version>
+    <primefaces.version>15.0.19</primefaces.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
 
