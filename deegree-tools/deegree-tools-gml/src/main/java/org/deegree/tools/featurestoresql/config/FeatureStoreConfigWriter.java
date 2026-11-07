@@ -34,8 +34,8 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.oracle.OracleDialect;
 import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.slf4j.Logger;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -47,7 +47,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -111,7 +110,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 			throws IOException {
 		String[] createStmts = DDLCreator.newInstance(mappedSchema, sqlDialect).getDDL();
 		String sqlOutputFilename = fileName + ".sql";
-		Path pathToSqlOutputFile = Paths.get(sqlOutputFilename);
+		Path pathToSqlOutputFile = Path.of(sqlOutputFilename);
 		LOG.info("Writing SQL DDL into file: {}", pathToSqlOutputFile.toUri());
 		try (BufferedWriter writer = Files.newBufferedWriter(pathToSqlOutputFile)) {
 			for (String sqlStatement : createStmts) {
@@ -124,7 +123,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 			throws XMLStreamException, IOException {
 		List<String> configUrls = Collections.singletonList(loadParameter.getSchemaUrl());
 		String xmlOutputFilename = fileName + ".xml";
-		Path pathToXmlOutputFile = Paths.get(xmlOutputFilename);
+		Path pathToXmlOutputFile = Path.of(xmlOutputFilename);
 		LOG.info("Writing deegree SQLFeatureStore configuration into file: {}", pathToXmlOutputFile.toUri());
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(bos);

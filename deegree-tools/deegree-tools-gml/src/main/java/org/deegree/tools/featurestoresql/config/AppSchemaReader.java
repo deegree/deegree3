@@ -23,7 +23,7 @@ package org.deegree.tools.featurestoresql.config;
 
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.schema.GMLAppSchemaReader;
-import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.infrastructure.item.ItemReader;
 
 /**
  * Item reader to read application schema files.

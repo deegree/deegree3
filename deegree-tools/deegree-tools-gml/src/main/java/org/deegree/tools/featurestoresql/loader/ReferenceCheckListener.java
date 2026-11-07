@@ -23,7 +23,7 @@ package org.deegree.tools.featurestoresql.loader;
 
 import org.slf4j.Logger;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.step.StepExecution;
 
 import java.util.List;
 import java.util.Set;
