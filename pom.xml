@@ -408,7 +408,6 @@
             </goals>
             <configuration>
               <rules>
-
                 <banDuplicateClasses>
                   <ignoreClasses>
                     <ignoreClass>com.ctc.wstx.*</ignoreClass>
@@ -428,7 +427,7 @@
                   <excludes>
                     <exclude>javax.xml.bind</exclude>
                     <exclude>javax.activation</exclude>
-                    <include>commons-logging:commons-logging</include>
+                    <exclude>commons-logging:commons-logging</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
