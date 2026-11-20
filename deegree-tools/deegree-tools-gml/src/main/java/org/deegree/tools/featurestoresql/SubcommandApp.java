@@ -25,13 +25,13 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.tools.featurestoresql;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameter;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.parameters.JobParameter;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -40,24 +40,24 @@ import org.springframework.context.ApplicationContext;
 public abstract class SubcommandApp {
 
 	protected static void runJob(String[] args, ApplicationContext applicationContext) throws Exception {
-		JobLauncher jobLauncher = applicationContext.getBean(JobLauncher.class);
+		JobOperator jobLauncher = applicationContext.getBean(JobOperator.class);
 		Job job = applicationContext.getBean(Job.class);
-		Map<String, JobParameter<?>> jobParams = createJobParams(args);
+		Set<JobParameter<?>> jobParams = createJobParams(args);
 		jobLauncher.run(job, new JobParameters(jobParams));
 	}
 
-	private static Map<String, JobParameter<?>> createJobParams(String[] args) {
-		Map<String, JobParameter<?>> jobParams = new HashMap<>();
+	private static Set<JobParameter<?>> createJobParams(String[] args) {
+		Set<JobParameter<?>> jobParams = new HashSet<>();
 		for (String arg : args) {
 			if (arg.startsWith("-")) {
 				int firstIndex = arg.startsWith("-- ") ? 2 : 1;
 				String key = arg.substring(firstIndex, arg.indexOf("="));
 				if (arg.contains("=")) {
 					String value = arg.substring(arg.indexOf("=") + 1);
-					jobParams.put(key, new JobParameter<>(value, String.class));
+					jobParams.add(new JobParameter<>(key, value, String.class));
 				}
 				else {
-					jobParams.put(key, new JobParameter<>(true, Boolean.class));
+					jobParams.add(new JobParameter<>(key, true, Boolean.class));
 				}
 			}
 		}

@@ -29,9 +29,9 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.reference.FeatureReference;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.core.step.StepExecution;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -55,8 +55,8 @@ public class FeatureReferencesParser implements ItemProcessor<Feature, Feature> 
 		for (Property property : properties) {
 			if (property.getType() instanceof FeaturePropertyType) {
 				TypedObjectNode href = property.getValue();
-				if (href != null && href instanceof FeatureReference) {
-					String hrefValue = ((FeatureReference) href).getURI();
+				if (href != null && href instanceof FeatureReference reference) {
+					String hrefValue = reference.getURI();
 					if (hrefValue.startsWith("#"))
 						references.add(hrefValue);
 				}
