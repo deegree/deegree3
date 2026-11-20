@@ -709,7 +709,7 @@
       <dependency>
         <groupId>org.jboss.weld.servlet</groupId>
         <artifactId>weld-servlet-core</artifactId>
-        <version>5.1.7.Final</version>
+        <version>7.0.0.Final</version>
       </dependency>
       <!-- logging -->
       <dependency>
