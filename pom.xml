@@ -835,7 +835,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>12.9</version>
+        <version>12.10</version>
       </dependency>
       <!-- JSON -->
       <dependency>
