@@ -108,10 +108,6 @@
       <artifactId>byte-buddy</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.objenesis</groupId>
-      <artifactId>objenesis</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jakarta.xml.soap</groupId>
       <artifactId>jakarta.xml.soap-api</artifactId>
     </dependency>
