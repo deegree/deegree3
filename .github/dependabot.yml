@@ -4,8 +4,19 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
-
+    open-pull-requests-limit: 100
+    ignore:
+      # no major and minor updates for all Maven dependencies and plugins
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-major" ]
+    groups:
+      # groups minor and patch plugin updates in one PR
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+          - "org.codehaus.mojo:*"
+          - "*:*-maven-plugin"
+        update-types: [ "minor", "patch" ]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
