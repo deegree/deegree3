@@ -35,6 +35,8 @@
 
 package org.deegree.rendering.r2d;
 
+import java.io.Serial;
+
 /**
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  *
@@ -44,6 +46,7 @@ public class RasterRenderingException extends RuntimeException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 3327285706883207758L;
 
 	/**

@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
+import java.io.Serial;
+
 /**
  * A UnknownMimetypeException is thrown if the MIME type is not supported.
  *
@@ -44,6 +46,7 @@ public class UnknownMimeTypeException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -3326395686226436933L;
 
 	private String mimeType;

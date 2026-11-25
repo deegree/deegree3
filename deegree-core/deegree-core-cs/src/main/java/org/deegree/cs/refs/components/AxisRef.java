@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.components;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -48,6 +49,7 @@ import org.deegree.cs.refs.CRSResourceRef;
  */
 public class AxisRef extends CRSResourceRef<IAxis> implements Serializable, IAxis {
 
+	@Serial
 	private static final long serialVersionUID = 162518956789884707L;
 
 	/**

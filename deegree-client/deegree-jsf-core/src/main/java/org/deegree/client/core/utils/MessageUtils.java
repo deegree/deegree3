@@ -51,7 +51,7 @@ public final class MessageUtils {
 
 	private static final String DEEGREE_RESOURCE_BUNDLE = "org.deegree.client.core.i18n.messages";
 
-	private static String JSF_BUNDLE_BASENAME = "javax.faces.Messages";
+	private static String JSF_BUNDLE_BASENAME = "jakarta.faces.Messages";
 
 	private static final String DETAIL_SUFFIX = "_detail";
 

@@ -82,6 +82,7 @@ public class ISO19139Validator implements ToolboxRegistration {
 	 * DO NOT USE
 	 * @deprecated only use for registration purpose
 	 */
+	@Deprecated
 	public ISO19139Validator() {
 		this.verbose = false;
 	}

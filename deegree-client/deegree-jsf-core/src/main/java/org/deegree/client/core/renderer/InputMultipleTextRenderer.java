@@ -55,7 +55,7 @@ import org.deegree.client.core.utils.RendererUtils;
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
-@FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputMultipleText")
+@FacesRenderer(componentFamily = "jakarta.faces.Input", rendererType = "org.deegree.InputMultipleText")
 public class InputMultipleTextRenderer extends Renderer {
 
 	@Override

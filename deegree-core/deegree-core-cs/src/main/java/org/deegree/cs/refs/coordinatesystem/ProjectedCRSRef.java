@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.coordinatesystem;
 
+import java.io.Serial;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -50,6 +52,7 @@ import org.deegree.cs.projections.IProjection;
  */
 public class ProjectedCRSRef extends CRSRef implements IProjectedCRS {
 
+	@Serial
 	private static final long serialVersionUID = -2737283787204180484L;
 
 	/**

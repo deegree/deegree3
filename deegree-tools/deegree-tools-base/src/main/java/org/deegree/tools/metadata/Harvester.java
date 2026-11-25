@@ -87,6 +87,7 @@ public class Harvester implements ToolboxRegistration {
 	 * DO NOT USE
 	 * @deprecated only use for registration purpose
 	 */
+	@Deprecated
 	public Harvester() {
 		this.verbose = false;
 		this.methodFI = null;

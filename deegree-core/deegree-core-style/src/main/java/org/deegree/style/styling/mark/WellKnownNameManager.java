@@ -62,27 +62,28 @@ public class WellKnownNameManager implements Initializable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WellKnownNameManager.class);
 
-	private static ServiceLoader<WellKnownNameLoader> wellLnownNameLoader;
+	private static ServiceLoader<WellKnownNameLoader> wellKnownNameLoader;
 
 	private static List<WellKnownNameLoader> loaders;
 
 	@Override
 	public void init(Workspace ws) {
-		wellLnownNameLoader = ServiceLoader.load(WellKnownNameLoader.class, ws.getModuleClassLoader());
+		wellKnownNameLoader = ServiceLoader.load(WellKnownNameLoader.class, ws.getModuleClassLoader());
 	}
 
 	private static synchronized void check() {
 		if (loaders == null) {
 			loaders = new ArrayList<>();
 			try {
-				for (WellKnownNameLoader loader : wellLnownNameLoader) {
-					LOG.debug("Laoading MarkLoader {} [Order: {}]", loader.getClass(), loader.order());
+				for (WellKnownNameLoader loader : wellKnownNameLoader) {
+					LOG.debug("Loading WellKnownNameLoader {} [Order: {}]", loader.getClass(), loader.order());
 					loaders.add(loader);
 				}
 				Collections.sort(loaders, comparingInt(WellKnownNameLoader::order));
 			}
 			catch (Exception e) {
-				LOG.error(e.getMessage(), e);
+				LOG.error("Failed to load custom WellKnownNameLoader:", e.getMessage());
+				LOG.trace("Exception", e);
 			}
 		}
 	}
@@ -148,7 +149,7 @@ public class WellKnownNameManager implements Initializable {
 			}
 		}
 		catch (Exception ex) {
-			LOG.warn("Invalid bounds specified, either use [widht,heigt] or [minx,miny,widht,height].");
+			LOG.warn("Invalid bounds specified, either use [width,height] or [minx,miny,width,height].");
 			LOG.warn("Bounds are ignored for WellKnownName {} error: {}", wellKnownName, ex.getMessage());
 			LOG.trace("Exception", ex);
 			// ignore bounds

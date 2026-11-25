@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.connection.remoteows;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.faces.view.ViewScoped;
@@ -45,6 +46,7 @@ import org.deegree.remoteows.RemoteOWSManager;
 @ViewScoped
 public class RemoteOwsManagerBean extends AbstractResourceManagerBean<RemoteOWSManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1272052355293535515L;
 
 	public RemoteOwsManagerBean() {

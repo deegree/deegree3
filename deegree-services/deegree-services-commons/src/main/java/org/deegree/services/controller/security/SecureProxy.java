@@ -56,6 +56,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -93,6 +94,7 @@ public class SecureProxy extends HttpServlet {
 
 	static final Logger LOG = getLogger(SecureProxy.class);
 
+	@Serial
 	private static final long serialVersionUID = 6154340524804958669L;
 
 	// make fields transient, serialized servlets are a bad idea IMHO

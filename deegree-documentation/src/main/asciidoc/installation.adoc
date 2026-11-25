@@ -92,7 +92,7 @@ releases of software:
 * Java Runtime Environment (JRE) or JDK
 * Apache Tomcat, Jetty or your preferred Java Servlet container
 * Third-party libraries such as GDAL, JDBC driver, and
-* deegree webservices itself.
+* <<anchor-deegree-webapps,deegree webservices webapp>> itself.
 
 TIP: If you are running Apache Tomcat we recommend that you read and apply
 all recommendations as documented in
@@ -111,7 +111,7 @@ https://tomcat.apache.org/tomcat-10.1-doc/ssl-howto.html[SSL configuration HowTo
 
 It is as a huge security problem to operate the deegree web application without
 setting a password for the administration console. How to set the password for
-the administration console is described in <<anchor-configuration-basics>>. The
+the administration console is described in <<anchor-global-configuration>>. The
 same applies to the deegree REST API. Since both transfer the
 credentials as clear text (with a little bit of obscurity) it is highly
 recommended to enable encryption on the protocol level as described
@@ -121,10 +121,18 @@ limit the access to both resources. Apply a filter by IP or hostname to
 only allow a subset of machines to connect and access the administration
 console and REST API.
 
-WARNING: The administration console provides access to the server file system. Therefore,
-you must not operate the Java Servlet container as root user!
-Furthermore, you should consider to enable the Java Security Manager and
-define restrictive file permissions.footnote:[How to run securely Java
+WARNING: The administration console and REST API provide read and write access to the server's file system. Therefore, you must not operate the Java Servlet container as root user! Consider to use the <<anchor-deegree-webapps,read-only minimal webapp>> instead. Furthermore, you should consider to enable the Java Security Manager and define restrictive file permissions.footnote:[How to run securely Java
 applications we recommend to follow the
 https://docs.oracle.com/en/java/javase/17/security/index.html[Java Security Guidelines] and for
 https://tomcat.apache.org/tomcat-10.1-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]
+
+[[anchor-deegree-webapps]]
+==== deegree webservices basic and minimal webapps
+
+Since deegree webservices version 3.6 the project provides three different flavours of the webapp:
+
+- `deegree-webservices.X.Y.war`: is the default (standard) webapp including the <<anchor-configuration-restapi,REST-API>> and <<anchor-admin-console,administration console>>.
+- `deegree-webservices-basic-X.Y.war`: this webapp includes the <<anchor-configuration-restapi,REST-API>> but *not* the administration console!
+- `deegree-webservices-minimal-X.Y.war`: this webapp contains only the services but is *without* REST-API and *without* administration console!
+
+TIP: For productive deployments it is recommended to use the read-only variant `deegree-webservices-minimal-X.Y.war`!

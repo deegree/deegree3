@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.projections;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -48,6 +49,7 @@ import org.deegree.cs.projections.conic.LambertConformalConic;
  */
 public class LambertConformalConicRef extends ProjectionRef implements Serializable, ILambertConformalConic {
 
+	@Serial
 	private static final long serialVersionUID = -3517587223781632018L;
 
 	/**

@@ -62,8 +62,8 @@ public class TemplateFeatureInfoSerializer implements FeatureInfoSerializer {
 
 	@Override
 	public void serialize(FeatureInfoParams params, FeatureInfoContext context) throws IOException, XMLStreamException {
-
-		runTemplate(context.getOutputStream(), fiFile, params.getFeatureCollection(), params.isWithGeometries());
+		runTemplate(context.getOutputStream(), fiFile, params.getFeatureCollection(), params.isWithGeometries(),
+				params.gfiTemplate());
 	}
 
 }

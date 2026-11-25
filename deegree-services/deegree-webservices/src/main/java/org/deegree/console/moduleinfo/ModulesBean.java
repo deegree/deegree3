@@ -30,6 +30,7 @@ package org.deegree.console.moduleinfo;
 import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import org.deegree.console.workspace.WorkspaceBean;
 @RequestScoped
 public class ModulesBean implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 147824864885285227L;
 
 	private String baseVersion;

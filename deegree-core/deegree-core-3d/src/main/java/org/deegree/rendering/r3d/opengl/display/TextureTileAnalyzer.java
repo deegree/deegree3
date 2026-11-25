@@ -35,6 +35,7 @@
 package org.deegree.rendering.r3d.opengl.display;
 
 import java.awt.Dimension;
+import java.io.Serial;
 import java.util.Collection;
 
 import javax.media.opengl.GL;
@@ -64,6 +65,7 @@ public class TextureTileAnalyzer extends GLCanvas implements GLEventListener {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 3484097952567872962L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(TextureTileAnalyzer.class);

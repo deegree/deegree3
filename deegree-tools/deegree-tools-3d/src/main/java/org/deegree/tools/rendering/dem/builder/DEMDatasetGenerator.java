@@ -151,6 +151,7 @@ public class DEMDatasetGenerator implements ToolboxRegistration {
 	 * DO NOT USE
 	 * @deprecated only use for registration purpose
 	 */
+	@Deprecated
 	public DEMDatasetGenerator() {
 		this.dataBuffer = null;
 		this.inputX = 0;

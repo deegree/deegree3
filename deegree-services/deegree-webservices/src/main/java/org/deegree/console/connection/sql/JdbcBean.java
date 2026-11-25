@@ -5,6 +5,7 @@ import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,6 +28,7 @@ import org.deegree.workspace.Workspace;
 @ViewScoped
 public class JdbcBean implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -425251614342669735L;
 
 	private String dbType = "mssql";

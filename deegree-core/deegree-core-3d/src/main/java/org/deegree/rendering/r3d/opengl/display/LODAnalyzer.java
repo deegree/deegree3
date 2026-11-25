@@ -35,6 +35,7 @@
 package org.deegree.rendering.r3d.opengl.display;
 
 import java.awt.Dimension;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
+	@Serial
 	private static final long serialVersionUID = -2679880887972155332L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(LODAnalyzer.class);

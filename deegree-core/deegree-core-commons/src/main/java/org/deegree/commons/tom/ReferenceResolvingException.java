@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom;
 
+import java.io.Serial;
+
 /**
  * Indicates that a {@link Reference} cannot be resolved.
  *
@@ -43,6 +45,7 @@ package org.deegree.commons.tom;
  */
 public class ReferenceResolvingException extends RuntimeException {
 
+	@Serial
 	private static final long serialVersionUID = -7702695645031124014L;
 
 	/**

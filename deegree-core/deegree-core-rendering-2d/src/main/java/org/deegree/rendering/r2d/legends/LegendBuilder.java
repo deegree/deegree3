@@ -108,7 +108,9 @@ class LegendBuilder {
 			try {
 				BufferedImage legend = get(IMAGE, url.toExternalForm(), null);
 				if (legend != null) {
-					style.setLegendSize(new Pair<>(legend.getWidth(), legend.getHeight()));
+					Pair<Integer, Integer> legendSize = new Pair<>(legend.getWidth(), legend.getHeight());
+					style.setLegendSize(legendSize);
+					return legendSize;
 				}
 				else {
 					LOG.warn("Legend file {} could not be read, using dynamic legend.", url);
@@ -119,7 +121,7 @@ class LegendBuilder {
 				LOG.trace("Stack trace:", e);
 			}
 		}
-		Pair<Integer, Integer> res = new Pair<Integer, Integer>(2 * opts.spacing + opts.baseWidth, 0);
+		Pair<Integer, Integer> res = new Pair<>(2 * opts.spacing + opts.baseWidth, 0);
 
 		for (LegendItem item : LegendItemBuilder.prepareLegend(style, null, null, null)) {
 			res.second += item.getHeight() * (2 * opts.spacing + opts.baseHeight);

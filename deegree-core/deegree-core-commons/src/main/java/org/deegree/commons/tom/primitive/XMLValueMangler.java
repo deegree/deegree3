@@ -102,7 +102,7 @@ public class XMLValueMangler {
 			case DOUBLE: {
 				if (isNullOrEmpty(s))
 					return null;
-				return new Double(s);
+				return Double.valueOf(s);
 			}
 			case INTEGER: {
 				if (isNullOrEmpty(s))

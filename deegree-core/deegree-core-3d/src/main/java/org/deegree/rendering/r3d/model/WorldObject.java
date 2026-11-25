@@ -39,6 +39,7 @@ import static org.deegree.commons.utils.memory.AllocatedHeapMemory.sizeOfObjectA
 import static org.deegree.commons.utils.memory.AllocatedHeapMemory.sizeOfString;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.index.PositionableModel;
@@ -65,6 +66,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 628773986403744985L;
 
 	private final static Logger LOG = LoggerFactory.getLogger(WorldObject.class);

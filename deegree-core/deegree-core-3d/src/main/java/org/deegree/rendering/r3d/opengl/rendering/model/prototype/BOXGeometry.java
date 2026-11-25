@@ -35,6 +35,8 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
+import java.io.Serial;
+
 import javax.media.opengl.GL;
 
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
@@ -53,6 +55,7 @@ public class BOXGeometry extends RenderableGeometry {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 1698575727921120208L;
 
 	private final float testObjectSize = 1f;

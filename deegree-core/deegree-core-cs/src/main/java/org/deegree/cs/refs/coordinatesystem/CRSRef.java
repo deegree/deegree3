@@ -37,6 +37,7 @@ package org.deegree.cs.refs.coordinatesystem;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -74,6 +75,7 @@ import org.slf4j.Logger;
  */
 public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {
 
+	@Serial
 	private static final long serialVersionUID = -2387578425336244509L;
 
 	private static final Logger LOG = getLogger(CRSRef.class);

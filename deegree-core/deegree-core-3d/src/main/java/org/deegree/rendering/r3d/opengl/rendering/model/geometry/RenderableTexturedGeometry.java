@@ -35,6 +35,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
+import java.io.Serial;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -61,6 +62,7 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 2809495291716138222L;
 
 	private final transient static Logger LOG = LoggerFactory.getLogger(RenderableTexturedGeometry.class);

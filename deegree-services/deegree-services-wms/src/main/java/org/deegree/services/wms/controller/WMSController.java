@@ -957,7 +957,7 @@ public class WMSController extends AbstractOWS {
 
 		try {
 			FeatureInfoParams params = new FeatureInfoParams(nsBindings, col, format, geometries, loc, type, crs,
-					infoCrs);
+					infoCrs, fi.getGfiTemplate());
 			featureInfoManager.serializeFeatureInfo(params, new StandardFeatureInfoContext(response));
 			response.flushBuffer();
 		}

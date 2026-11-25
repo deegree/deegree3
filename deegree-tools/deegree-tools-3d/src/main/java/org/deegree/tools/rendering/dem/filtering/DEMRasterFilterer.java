@@ -127,6 +127,7 @@ public class DEMRasterFilterer implements ToolboxRegistration {
 	 * DO NOT USE
 	 * @deprecated only use for registration purpose
 	 */
+	@Deprecated
 	public DEMRasterFilterer() {
 		this.outputDir = null;
 		this.outputType = null;

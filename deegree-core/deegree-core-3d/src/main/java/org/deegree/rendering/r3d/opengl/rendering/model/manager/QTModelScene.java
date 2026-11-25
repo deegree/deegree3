@@ -37,6 +37,7 @@ package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,6 +64,7 @@ public class QTModelScene<T extends PositionableModel> extends QTree<T> {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 3400650143709933646L;
 
 	// the most significant error of a node.

@@ -25,6 +25,7 @@ import static java.util.Calendar.APRIL;
 import static org.deegree.cql2.CQL2FilterParser.parseCql2Filter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -603,7 +604,7 @@ public class Cql2FilterParserTest {
 
 		assertTrue(visit instanceof PropertyIsEqualTo);
 		PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) visit;
-		assertFalse(propertyIsEqualTo.isMatchCase());
+		assertNull(propertyIsEqualTo.isMatchCase());
 
 		Expression param1 = propertyIsEqualTo.getParameter1();
 		assertTrue(param1 instanceof ValueReference);
@@ -626,7 +627,7 @@ public class Cql2FilterParserTest {
 
 		assertTrue(visit instanceof PropertyIsEqualTo);
 		PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) visit;
-		assertFalse(propertyIsEqualTo.isMatchCase());
+		assertNull(propertyIsEqualTo.isMatchCase());
 
 		Expression param1 = propertyIsEqualTo.getParameter1();
 		assertTrue(param1 instanceof ValueReference);
@@ -650,7 +651,7 @@ public class Cql2FilterParserTest {
 
 		assertTrue(visit instanceof PropertyIsEqualTo);
 		PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) visit;
-		assertFalse(propertyIsEqualTo.isMatchCase());
+		assertNull(propertyIsEqualTo.isMatchCase());
 
 		Expression param1 = propertyIsEqualTo.getParameter1();
 		assertTrue(param1 instanceof ValueReference);
@@ -987,8 +988,9 @@ public class Cql2FilterParserTest {
 
 		assertTrue(visit instanceof PropertyIsLessThan);
 		assertEquals(2, ((PropertyIsLessThan) visit).getParams().length);
-		Expression param1 = ((PropertyIsLessThan) visit).getParameter1();
+		assertNull(((PropertyIsLessThan) visit).isMatchCase());
 
+		Expression param1 = ((PropertyIsLessThan) visit).getParameter1();
 		assertTrue(param1 instanceof ValueReference);
 		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
 		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
@@ -1009,8 +1011,9 @@ public class Cql2FilterParserTest {
 
 		assertTrue(visit instanceof PropertyIsLessThanOrEqualTo);
 		assertEquals(2, ((PropertyIsLessThanOrEqualTo) visit).getParams().length);
-		Expression param1 = ((PropertyIsLessThanOrEqualTo) visit).getParameter1();
+		assertNull(((PropertyIsLessThanOrEqualTo) visit).isMatchCase());
 
+		Expression param1 = ((PropertyIsLessThanOrEqualTo) visit).getParameter1();
 		assertTrue(param1 instanceof ValueReference);
 		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
 		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
@@ -1031,8 +1034,9 @@ public class Cql2FilterParserTest {
 
 		assertTrue(visit instanceof PropertyIsGreaterThan);
 		assertEquals(2, ((PropertyIsGreaterThan) visit).getParams().length);
-		Expression param1 = ((PropertyIsGreaterThan) visit).getParameter1();
+		assertNull(((PropertyIsGreaterThan) visit).isMatchCase());
 
+		Expression param1 = ((PropertyIsGreaterThan) visit).getParameter1();
 		assertTrue(param1 instanceof ValueReference);
 		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
 		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
@@ -1053,8 +1057,9 @@ public class Cql2FilterParserTest {
 
 		assertTrue(visit instanceof PropertyIsGreaterThanOrEqualTo);
 		assertEquals(2, ((PropertyIsGreaterThanOrEqualTo) visit).getParams().length);
-		Expression param1 = ((PropertyIsGreaterThanOrEqualTo) visit).getParameter1();
+		assertNull(((PropertyIsGreaterThanOrEqualTo) visit).isMatchCase());
 
+		Expression param1 = ((PropertyIsGreaterThanOrEqualTo) visit).getParameter1();
 		assertTrue(param1 instanceof ValueReference);
 		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
 		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());

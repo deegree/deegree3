@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.coordinatesystem;
 
+import java.io.Serial;
+
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IUnit;
@@ -48,6 +50,7 @@ import org.deegree.cs.coordinatesystems.ICompoundCRS;
  */
 public class CompoundCRSRef extends CRSRef implements ICompoundCRS {
 
+	@Serial
 	private static final long serialVersionUID = -3414397045382059732L;
 
 	/**

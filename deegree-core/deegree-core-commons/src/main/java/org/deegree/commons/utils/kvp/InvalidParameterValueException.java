@@ -35,6 +35,8 @@
 
 package org.deegree.commons.utils.kvp;
 
+import java.io.Serial;
+
 /**
  * Thrown to indicate that a parameter has an unsupported or unsuitable value.
  *
@@ -42,6 +44,7 @@ package org.deegree.commons.utils.kvp;
  */
 public class InvalidParameterValueException extends IllegalArgumentException {
 
+	@Serial
 	private static final long serialVersionUID = -6082873552693636502L;
 
 	private String param;

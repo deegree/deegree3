@@ -193,6 +193,7 @@ public abstract class SpatialOperator implements Operator {
 	 * property of object)
 	 * @deprecated use {@link #getParam1()} instead
 	 */
+	@Deprecated
 	public ValueReference getPropName() {
 		return (ValueReference) param1;
 	}

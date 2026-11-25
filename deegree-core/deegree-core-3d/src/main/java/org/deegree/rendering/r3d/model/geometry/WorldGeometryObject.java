@@ -35,6 +35,8 @@
 
 package org.deegree.rendering.r3d.model.geometry;
 
+import java.io.Serial;
+
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.model.WorldObject;
 
@@ -49,6 +51,7 @@ public class WorldGeometryObject extends WorldObject<SimpleAccessGeometry, Geome
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 1352860202021497685L;
 
 	/**

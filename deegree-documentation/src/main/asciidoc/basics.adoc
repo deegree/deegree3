@@ -121,8 +121,8 @@ read/write access to this directory!
 [[anchor-global-configuration]]
 ==== Global configuration files and the active workspace
 
-If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set an administration console password and the proxy parameters,
-your _.deegree_ directory will look like this:
+If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set an administration console password before you continue and apply proxy parameters, if needed.
+Your _.deegree_ workspace directory will look like this:
 
 .Example _.deegree_ directory
 image::workspace-root.png[Example _.deegree_ directory]
@@ -159,9 +159,9 @@ _webapps.properties_ stores the active workspace for every deegree
 webapp separately.
 
 TIP: If there is no _config.apikey_ file, one will be generated on startup
-with a random value. Alternatively, a value of `*` in config.apikey will
+with a random value. Alternatively, a value of `*` in _config.apikey_ will
 turn off security for the REST API. We strongly advise against doing this
-in productive environments.
+in productive environments!
 
 === Structure of the deegree workspace directory
 
@@ -363,6 +363,7 @@ protocol if possible and to define the settings for
 `HttpProxy...` and `HttpsProxy...` identically.
 ____
 
+[[anchor-admin-console]]
 === Using the deegree webservices administration console for managing resources
 
 As an alternative to dealing with the workspace resource configuration

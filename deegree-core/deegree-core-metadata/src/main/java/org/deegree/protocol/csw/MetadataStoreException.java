@@ -35,6 +35,8 @@
 
 package org.deegree.protocol.csw;
 
+import java.io.Serial;
+
 /**
  * Indicates an exception that occured in the metadata persistence layer.
  *
@@ -43,6 +45,7 @@ package org.deegree.protocol.csw;
  */
 public class MetadataStoreException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = -8171919093492328054L;
 
 	/**

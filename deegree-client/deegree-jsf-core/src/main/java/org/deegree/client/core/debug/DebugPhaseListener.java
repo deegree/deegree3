@@ -42,6 +42,7 @@ import jakarta.faces.event.PhaseId;
 import jakarta.faces.event.PhaseListener;
 import org.slf4j.Logger;
 
+import java.io.Serial;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,6 +53,7 @@ import java.util.Map.Entry;
  */
 public class DebugPhaseListener implements PhaseListener {
 
+	@Serial
 	private static final long serialVersionUID = -2995584920005634458L;
 
 	private static final Logger LOG = getLogger(DebugPhaseListener.class);

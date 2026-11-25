@@ -48,7 +48,7 @@ import org.deegree.client.core.utils.MessageUtils;
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/ajaxStatus.css"),
 		@ResourceDependency(name = "javascript/ajaxStatus.js", library = "deegree", target = "head"),
-		@ResourceDependency(name = "jsf.js", library = "javax.faces", target = "head") })
+		@ResourceDependency(name = "jsf.js", library = "jakarta.faces", target = "head") })
 @FacesComponent(value = "HtmlAjaxStatus")
 public class HtmlAjaxStatus extends UIComponentBase {
 

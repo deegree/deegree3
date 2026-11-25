@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.config;
 
+import java.io.Serial;
+
 /**
  * Indicates that a {@link Resource} could not be initialized properly.
  *
@@ -41,6 +43,7 @@ package org.deegree.commons.config;
  */
 public class ResourceInitException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 1048911724231688270L;
 
 	/**

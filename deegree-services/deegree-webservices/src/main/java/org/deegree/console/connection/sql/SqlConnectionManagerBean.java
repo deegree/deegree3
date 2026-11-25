@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.connection.sql;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +52,7 @@ import org.deegree.workspace.ResourceMetadata;
 public class SqlConnectionManagerBean extends AbstractResourceManagerBean<ConnectionProviderManager>
 		implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 2946865645336970064L;
 
 	public SqlConnectionManagerBean() {

@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
+import java.io.Serial;
+
 /**
  * This exception is an application exception thrown by the mail component
  *
@@ -44,6 +46,7 @@ public class SendMailException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 5266241004774907543L;
 
 	/**

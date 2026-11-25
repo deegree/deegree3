@@ -47,10 +47,13 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.om.OMXMLParserWrapper;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.DoublePair;
+import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.junit.Test;
 
 /**
@@ -110,6 +113,15 @@ public class WMS111CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
 		assertNotNull(boundingBox);
 		Envelope bbox = (new GeometryFactory()).createEnvelope(-1, -1, 1, 1, CRSManager.lookup("EPSG:4326"));
 		assertTrue(boundingBox.equals(bbox));
+	}
+
+	@Test
+	public void testWMS111Capabilities_scaleDenominators() throws XMLStreamException {
+		WMSCapabilitiesAdapter capabilities = createCapabilities();
+		LayerMetadata layer = capabilities.getLayer("citelayers");
+		DoublePair scaleDenominators = layer.getScaleDenominators();
+		assertEquals(0.0, scaleDenominators.first, 0);
+		assertEquals(2.525381361380527E10, scaleDenominators.second, 0);
 	}
 
 	@Override

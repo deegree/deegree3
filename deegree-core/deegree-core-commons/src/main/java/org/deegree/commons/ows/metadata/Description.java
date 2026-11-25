@@ -107,6 +107,7 @@ public class Description {
 	 * (e.g. WFS 1.0.0). Newer service specifications don't define it.
 	 * @return name of the object, can be <code>null</code>
 	 */
+	@Deprecated
 	public String getName() {
 		return name;
 	}

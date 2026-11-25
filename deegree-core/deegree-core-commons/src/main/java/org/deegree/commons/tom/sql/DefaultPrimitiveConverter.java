@@ -237,7 +237,7 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
 			value = (Double) sqlValue;
 		}
 		else {
-			value = new Double(sqlValue.toString());
+			value = Double.valueOf(sqlValue.toString());
 		}
 		return new PrimitiveValue(value, pt);
 	}

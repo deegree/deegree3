@@ -35,6 +35,8 @@
 
 package org.deegree.feature.persistence;
 
+import java.io.Serial;
+
 /**
  * Indicates an exception that occured in the feature persistence layer.
  *
@@ -42,6 +44,7 @@ package org.deegree.feature.persistence;
  */
 public class FeatureStoreException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = -8171919093492328054L;
 
 	/**

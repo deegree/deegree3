@@ -154,6 +154,7 @@ public class ShapeHelper {
 	 * @deprecated {@link #getShapeFromMark(Mark, double, double, boolean, double, double)}
 	 * or {@link #getShapeFromMarkForFill(Mark, double, double)}
 	 */
+	@Deprecated
 	public static Shape getShapeFromMark(Mark mark, double size, double rotation) {
 		return getShapeFromMark(mark, size, rotation, false, -1, -1);
 	}
@@ -232,7 +233,10 @@ public class ShapeHelper {
 			t.translate(0, -(h - w) / 2);
 		}
 
-		shape = t.createTransformedShape(shape);
+		if (shape instanceof BoundedShape)
+			shape = ((BoundedShape) shape).transform(t);
+		else
+			shape = t.createTransformedShape(shape);
 
 		t = new AffineTransform();
 		if (translate) {
@@ -367,6 +371,21 @@ public class ShapeHelper {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Combine multiple shapes into one GeneralPath
+	 * @param shapes List of {@link Shape} to be combined
+	 * @return A shape including all passed shapes
+	 */
+	public static Shape combineShapes(Shape... shapes) {
+		GeneralPath path = new GeneralPath(GeneralPath.WIND_NON_ZERO);
+		for (Shape shape : shapes) {
+			if (shape != null) {
+				path.append(shape, false);
+			}
+		}
+		return path;
 	}
 
 }

@@ -125,6 +125,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
      * @deprecated
      * @see jakarta.servlet.http.HttpServletResponse#encodeURL(java.lang.String)
      */
+    @Deprecated
     public String encodeUrl( String url ) {
         return response.encodeURL( url );
     }
@@ -135,6 +136,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
      * @deprecated
      * @see jakarta.servlet.http.HttpServletResponse#encodeRedirectURL(java.lang.String)
      */
+    @Deprecated
     public String encodeRedirectUrl( String url ) {
         return response.encodeRedirectURL( url );
     }

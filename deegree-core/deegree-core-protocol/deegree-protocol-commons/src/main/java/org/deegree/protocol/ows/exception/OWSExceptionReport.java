@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.exception;
 
+import java.io.Serial;
 import java.util.List;
 
 import org.deegree.commons.ows.exception.OWSException;
@@ -45,6 +46,7 @@ import org.deegree.commons.ows.exception.OWSException;
  */
 public class OWSExceptionReport extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 3640316306096580505L;
 
 	private final String version;

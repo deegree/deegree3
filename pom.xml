@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.6.10-SNAPSHOT</version>
+  <version>3.6.16-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>https://www.deegree.org</url>
@@ -82,7 +82,7 @@
         <plugin>
           <groupId>org.jvnet.jaxb</groupId>
           <artifactId>jaxb-maven-plugin</artifactId>
-          <version>4.0.12</version>
+          <version>4.0.16</version>
           <executions>
             <execution>
               <goals>
@@ -109,7 +109,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.7.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -122,7 +122,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.10.0</version>
+          <version>3.11.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -142,7 +142,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.5</version>
+          <version>3.6.1</version>
           <configuration>
             <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m
               --add-opens java.base/java.lang=ALL-UNNAMED
@@ -158,7 +158,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.5.5</version>
+          <version>3.6.1</version>
           <configuration>
             <argLine>${jvm.args}</argLine>
           </configuration>
@@ -180,12 +180,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.4</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.4</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -195,12 +195,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
+          <version>3.16.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.5.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -210,7 +210,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>buildnumber-maven-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -240,7 +240,7 @@
         <plugin>
           <groupId>org.eclipse.jetty.ee10</groupId>
           <artifactId>jetty-ee10-maven-plugin</artifactId>
-          <version>12.0.31</version>
+          <version>12.1.15</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -249,7 +249,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.7.3</version>
+        <version>1.9.0</version>
         <inherited>false</inherited>
         <configuration>
           <flattenMode>bom</flattenMode>
@@ -323,7 +323,8 @@
         <configuration>
           <release>${java.version}</release>
           <encoding>${project.build.sourceEncoding}</encoding>
-          <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
+          <parameters>true</parameters>
+          <failOnWarning>true</failOnWarning>
         </configuration>
       </plugin>
       <plugin>
@@ -381,7 +382,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.2</version>
+        <version>3.7.0</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
@@ -407,7 +408,6 @@
             </goals>
             <configuration>
               <rules>
-
                 <banDuplicateClasses>
                   <ignoreClasses>
                     <ignoreClass>com.ctc.wstx.*</ignoreClass>
@@ -427,7 +427,7 @@
                   <excludes>
                     <exclude>javax.xml.bind</exclude>
                     <exclude>javax.activation</exclude>
-                    <include>commons-logging:commons-logging</include>
+                    <exclude>commons-logging:commons-logging</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -439,7 +439,7 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.11.0</version>
+            <version>1.12.1</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -460,7 +460,7 @@
       <plugin>
         <groupId>org.cyclonedx</groupId>
         <artifactId>cyclonedx-maven-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>2.9.3</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -564,13 +564,13 @@
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-core</artifactId>
-        <version>2.11.0</version>
+        <version>2.12.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-matchers</artifactId>
-        <version>2.11.0</version>
+        <version>2.14.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -589,7 +589,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.21.0</version>
+        <version>2.22.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -605,7 +605,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.5.0</version>
+        <version>4.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -615,7 +615,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.21.0</version>
+        <version>1.23.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -687,7 +687,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
-        <version>4.0.18</version>
+        <version>4.0.29</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -803,7 +803,7 @@
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
-        <version>1.2.18</version>
+        <version>2.1.1</version>
         <exclusions>
           <exclusion>
             <groupId>javax.xml.bind</groupId>
@@ -874,17 +874,17 @@
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-jdbc</artifactId>
-        <version>2023.1.0</version>
+        <version>2025.1.1</version>
       </dependency>
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-geometry</artifactId>
-        <version>2023.1.0</version>
+        <version>2025.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.11</version>
+        <version>42.7.14</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -1135,7 +1135,7 @@
       <dependency>
         <groupId>org.ehcache</groupId>
         <artifactId>ehcache</artifactId>
-        <version>3.11.1</version>
+        <version>3.12.0</version>
         <classifier>jakarta</classifier>
       </dependency>
       <dependency>
@@ -1205,13 +1205,13 @@
       <dependency>
         <groupId>org.gdal</groupId>
         <artifactId>gdal</artifactId>
-        <version>3.12.0</version>
+        <version>3.13.0</version>
       </dependency>
       <!-- TODO not maintained anymore ! to be removed! -->
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.13.2</version>
+        <version>2.14.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1267,7 +1267,7 @@
       <dependency>
         <groupId>com.google.auto.service</groupId>
         <artifactId>auto-service</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.hsqldb</groupId>
@@ -1285,14 +1285,14 @@
     <antlr.version>3.5.3</antlr.version>
     <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
-    <logback.version>1.5.34</logback.version>
-    <slf4j.version>2.0.18</slf4j.version>
-    <spring-boot.version>3.5.15</spring-boot.version>
-    <batik.version>1.19</batik.version>
+    <logback.version>1.5.38</logback.version>
+    <spring-boot.version>3.5.16</spring-boot.version>
+    <slf4j.version>2.0.20</slf4j.version>
+    <batik.version>1.20</batik.version>
     <axiom.version>2.0.0</axiom.version>
     <jsonpath.version>2.10.0</jsonpath.version>
-    <jsonsmart.version>2.6.0</jsonsmart.version>
-    <primefaces.version>15.0.16</primefaces.version>
+    <jsonsmart.version>2.6.1</jsonsmart.version>
+    <primefaces.version>15.0.19</primefaces.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
 
@@ -1328,7 +1328,7 @@
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.10.2.0</version>
+            <version>4.10.4.1</version>
             <configuration>
               <xmlOutput>true</xmlOutput>
               <spotbugsXmlOutput>true</spotbugsXmlOutput>
@@ -1384,7 +1384,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>12.2.2</version>
+            <version>13.0.0</version>
             <configuration>
               <nvdValidForHours>24</nvdValidForHours>
               <knownExploitedEnabled>false</knownExploitedEnabled>

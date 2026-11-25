@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
+import java.io.Serial;
+
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
@@ -51,6 +53,7 @@ import org.apache.axiom.om.OMElement;
  */
 public class XMLParsingException extends XMLProcessingException {
 
+	@Serial
 	private static final long serialVersionUID = 2428868104304736218L;
 
 	private String msg;

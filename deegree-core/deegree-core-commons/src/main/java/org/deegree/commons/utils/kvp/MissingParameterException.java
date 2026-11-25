@@ -35,6 +35,8 @@
 
 package org.deegree.commons.utils.kvp;
 
+import java.io.Serial;
+
 /**
  * Thrown to indicate that a required parameter is missing.
  *
@@ -42,6 +44,7 @@ package org.deegree.commons.utils.kvp;
  */
 public class MissingParameterException extends IllegalArgumentException {
 
+	@Serial
 	private static final long serialVersionUID = -624744087515632107L;
 
 	private String param;

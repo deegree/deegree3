@@ -34,6 +34,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wcs;
 
+import java.io.Serial;
+
 /**
  * This is an exception class for internal (non-OGC) Web Coverage Service exceptions.
  *
@@ -45,6 +47,7 @@ public class WCServiceException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -2785086996162224235L;
 
 	/**

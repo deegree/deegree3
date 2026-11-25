@@ -141,6 +141,7 @@ public class BBOX extends SpatialOperator {
 	 * @deprecated use {@link #getParam1()} instead
 	 */
 	@Override
+	@Deprecated
 	public ValueReference getPropName() {
 		return (ValueReference) param1;
 	}

@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.client;
 
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.protocol.i18n.Messages.get;
 
@@ -41,6 +43,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.DoublePair;
+import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -113,6 +117,24 @@ public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 	@Override
 	protected String getExtendedCapabilitiesRootXPath() {
 		return "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities";
+	}
+
+	@Override
+	protected DoublePair parseScaleDenominators(OMElement lay) {
+		double minScaleHint = getNodeAsDouble(lay, new XPath(getPrefix() + "ScaleHint/@min", nsContext), -1);
+		double maxScaleHint = getNodeAsDouble(lay, new XPath(getPrefix() + "ScaleHint/@max", nsContext), -1);
+		if (minScaleHint > -1 || maxScaleHint > -1) {
+			double minScaleDenominator = calculateScaleDenominator(minScaleHint, NEGATIVE_INFINITY);
+			double maxScaleDenominator = calculateScaleDenominator(maxScaleHint, POSITIVE_INFINITY);
+			return new DoublePair(minScaleDenominator, maxScaleDenominator);
+		}
+		return new DoublePair(NEGATIVE_INFINITY, POSITIVE_INFINITY);
+	}
+
+	private double calculateScaleDenominator(double scaleHint, double defaultValue) {
+		if (scaleHint < 0)
+			return defaultValue;
+		return MapUtils.calcScaleDenominator(scaleHint);
 	}
 
 }

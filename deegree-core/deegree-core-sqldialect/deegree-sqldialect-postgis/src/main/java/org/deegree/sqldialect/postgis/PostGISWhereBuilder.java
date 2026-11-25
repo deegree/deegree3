@@ -40,6 +40,7 @@ import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -50,6 +51,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
@@ -74,6 +77,7 @@ import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.filter.expression.SQLColumn;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
@@ -93,6 +97,9 @@ import org.slf4j.LoggerFactory;
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PostGISWhereBuilder.class);
+
+	private static final Set<String> MAPPED_PROPERTY_EQUALS_TO_FUNCTIONS_LC = Set.of("IsCurve".toLowerCase(),
+			"IsPoint".toLowerCase(), "IsSurface".toLowerCase());
 
 	private final boolean useLegacyPredicates;
 
@@ -574,6 +581,100 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
 	private boolean isTimeInstant(Expression parameter2) {
 		return parameter2 instanceof Literal && ((Literal<?>) parameter2).getValue() instanceof GenericTimeInstant;
+	}
+
+	/**
+	 * Translates the given {@link ComparisonOperator} into an {@link SQLExpression}.
+	 *
+	 * Functions that is mappable will be mapped to SQL Functions
+	 * @param op comparison operator to be translated, must not be <code>null</code>
+	 * @return corresponding SQL expression, never <code>null</code>
+	 * @throws UnmappableException if translation is not possible (usually due to
+	 * unmappable property names)
+	 * @throws FilterEvaluationException if the filter contains invalid
+	 * {@link ValueReference}s
+	 */
+	@Override
+	protected SQLExpression toProtoSQL(ComparisonOperator op) throws UnmappableException, FilterEvaluationException {
+		SQLExpression sqlexpr = null;
+
+		if (op.getSubType() == ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO) {
+			PropertyIsEqualTo propIsEqualTo = (PropertyIsEqualTo) op;
+
+			Expression expr1 = propIsEqualTo.getParameter1();
+			Expression expr2 = propIsEqualTo.getParameter2();
+
+			Function function = null;
+			Literal<?> literal = null;
+
+			if (expr1 instanceof Function && expr2 instanceof Literal<?>) {
+				function = (Function) expr1;
+				literal = (Literal<?>) expr2;
+			}
+			else if (expr2 instanceof Function && expr1 instanceof Literal<?>) {
+				function = (Function) expr2;
+				literal = (Literal<?>) expr1;
+			}
+
+			if (function != null && literal != null
+					&& MAPPED_PROPERTY_EQUALS_TO_FUNCTIONS_LC.contains(function.getName().toLowerCase())
+					&& function.getParameters().size() == 1
+					&& function.getParameters().get(0) instanceof ValueReference) {
+
+				sqlexpr = toProtoSQL(function.getName(), (ValueReference) function.getParameters().get(0), literal);
+			}
+		}
+		if (sqlexpr != null)
+			return sqlexpr;
+
+		return super.toProtoSQL(op);
+	}
+
+	private SQLExpression toProtoSQL(String functionName, ValueReference valueRef, Literal<?> literal)
+			throws UnmappableException, FilterEvaluationException {
+
+		String lit = literal.getValue().toString();
+
+		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
+
+		builder.add(useLegacyPredicates ? "GeometryType( " : "ST_GeometryType( ");
+		builder.add(toProtoSQL(valueRef));
+
+		if ("true".equalsIgnoreCase(lit) || "1".equalsIgnoreCase(lit))
+			builder.add(" ) IN ");
+		else
+			builder.add(" ) NOT IN ");
+
+		if ("IsCurve".equalsIgnoreCase(functionName)) {
+			if (useLegacyPredicates) {
+				builder.add("('LINESTRING','CIRCULARSTRING','COMPOUNDCURVE','MULTILINESTRING','MULTICURVE')");
+			}
+			else {
+				builder.add(
+						"('ST_LineString','ST_CircularString','ST_CompoundCurve','ST_MultiCurve','ST_MultiLineString')");
+			}
+		}
+		else if ("IsPoint".equalsIgnoreCase(functionName)) {
+			if (useLegacyPredicates) {
+				builder.add("('POINT','MULTIPOINT')");
+			}
+			else {
+				builder.add("('ST_Point','ST_MultiPoint')");
+			}
+		}
+		else if ("IsSurface".equalsIgnoreCase(functionName)) {
+			if (useLegacyPredicates) {
+				builder.add("('CURVEPOLYGON','POLYGON','MULTISURFACE','MULTIPOLYGON')");
+			}
+			else {
+				builder.add("('ST_CurvePolygon','ST_Polygon','ST_MultiSurface','ST_MultiPolygon')");
+			}
+		}
+		else {
+			return null;
+		}
+
+		return builder.toOperation();
 	}
 
 }

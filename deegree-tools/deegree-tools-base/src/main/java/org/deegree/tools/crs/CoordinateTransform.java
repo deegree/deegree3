@@ -94,6 +94,7 @@ public class CoordinateTransform implements ToolboxRegistration {
 	 * DO NOT USE
 	 * @deprecated only use for registration purpose
 	 */
+	@Deprecated
 	public CoordinateTransform() {
 		this.sourceCRS = null;
 		this.targetCRS = null;

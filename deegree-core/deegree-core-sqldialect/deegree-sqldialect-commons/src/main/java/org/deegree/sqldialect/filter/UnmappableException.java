@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter;
 
+import java.io.Serial;
+
 import org.deegree.filter.Filter;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 
@@ -45,6 +47,7 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
  */
 public class UnmappableException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 1433526718588574837L;
 
 	/**

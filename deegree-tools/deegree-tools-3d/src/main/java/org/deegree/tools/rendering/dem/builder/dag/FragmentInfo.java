@@ -35,6 +35,7 @@
 
 package org.deegree.tools.rendering.dem.builder.dag;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
@@ -48,6 +49,7 @@ import org.deegree.tools.rendering.dem.builder.MacroTriangle;
  */
 public class FragmentInfo implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -4663061794245767665L;
 
 	public static final int SIZE = MeshFragment.SIZE;

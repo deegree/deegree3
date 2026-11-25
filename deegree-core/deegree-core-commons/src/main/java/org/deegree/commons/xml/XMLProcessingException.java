@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
+import java.io.Serial;
+
 /**
  * Base class for XML-related exceptions.
  *
@@ -41,6 +43,7 @@ package org.deegree.commons.xml;
  */
 public class XMLProcessingException extends RuntimeException {
 
+	@Serial
 	private static final long serialVersionUID = -375766555263169888L;
 
 	private String message = "org.deegree.xml.XMLParsingException";

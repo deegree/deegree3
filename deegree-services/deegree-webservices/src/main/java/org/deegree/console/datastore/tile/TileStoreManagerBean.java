@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.tile;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.faces.view.ViewScoped;
@@ -45,6 +46,7 @@ import org.deegree.tile.persistence.TileStoreManager;
 @ViewScoped
 public class TileStoreManagerBean extends AbstractResourceManagerBean<TileStoreManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -5495759423259752805L;
 
 	public TileStoreManagerBean() {

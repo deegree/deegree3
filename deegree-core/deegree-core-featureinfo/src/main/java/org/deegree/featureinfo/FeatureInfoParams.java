@@ -52,34 +52,13 @@ import org.deegree.feature.types.FeatureType;
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  */
-public class FeatureInfoParams {
-
-	private Map<String, String> nsBindings;
-
-	private FeatureCollection featureCollection;
-
-	private String format;
-
-	private boolean withGeometries;
-
-	private String schemaLocation;
-
-	private FeatureType featureType;
-
-	private ICRS crs;
-
-	private final ICRS infoCrs;
+public record FeatureInfoParams(Map<String, String> nsBindings, FeatureCollection featureCollection, String format,
+		boolean withGeometries, String schemaLocation, FeatureType featureType, ICRS crs, ICRS infoCrs,
+		String gfiTemplate) {
 
 	public FeatureInfoParams(Map<String, String> nsBindings, FeatureCollection col, String format,
 			boolean withGeometries, String schemaLocation, FeatureType type, ICRS crs, ICRS infoCrs) {
-		this.nsBindings = nsBindings;
-		this.featureCollection = col;
-		this.format = format;
-		this.withGeometries = withGeometries;
-		this.schemaLocation = schemaLocation;
-		this.featureType = type;
-		this.crs = crs;
-		this.infoCrs = infoCrs;
+		this(nsBindings, col, format, withGeometries, schemaLocation, type, crs, infoCrs, null);
 	}
 
 	/**

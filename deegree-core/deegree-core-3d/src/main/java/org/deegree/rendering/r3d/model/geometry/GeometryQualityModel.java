@@ -35,6 +35,7 @@
 
 package org.deegree.rendering.r3d.model.geometry;
 
+import java.io.Serial;
 import java.util.ArrayList;
 
 import org.deegree.rendering.r3d.model.QualityModel;
@@ -51,6 +52,7 @@ public class GeometryQualityModel extends QualityModel<SimpleAccessGeometry> {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 6512563995304520151L;
 
 	/**

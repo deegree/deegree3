@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.metadata;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +52,7 @@ import org.deegree.workspace.ResourceMetadata;
 public class MetadataStoreManagerBean extends AbstractResourceManagerBean<MetadataStoreManager>
 		implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -4434195887541111329L;
 
 	public MetadataStoreManagerBean() {

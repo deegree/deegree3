@@ -23,5 +23,5 @@ function processAjaxUpdate(msgId, modal, forId) {
 
 function registerAjaxStatus(msgId, modal, forId) {
 	dumpln("register: " + msgId + ", " + modal + ", " + forId);
-	jsf.ajax.addOnEvent(processAjaxUpdate(msgId, modal, forId));
+	faces.ajax.addOnEvent(processAjaxUpdate(msgId, modal, forId));
 }

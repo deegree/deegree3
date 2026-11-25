@@ -1008,6 +1008,54 @@ public class SymbologyParser {
 						}
 					}, contn).second;
 				}
+				else if (name.equals("deegree-font-strikethrough")) {
+					contn = updateOrContinue(in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+						@Override
+						public void update(Font obj, String val) {
+							obj.strikethrough = "true".equalsIgnoreCase(val);
+						}
+					}, contn).second;
+				}
+				else if (name.equals("deegree-font-strikethrough-offset")) {
+					contn = updateOrContinue(in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+						@Override
+						public void update(Font obj, String val) {
+							obj.strikethroughOffset = Double.parseDouble(val);
+						}
+					}, contn).second;
+				}
+				else if (name.equals("deegree-font-strikethrough-width")) {
+					contn = updateOrContinue(in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+						@Override
+						public void update(Font obj, String val) {
+							obj.strikethroughWidth = Double.parseDouble(val);
+						}
+					}, contn).second;
+				}
+				else if (name.equals("deegree-font-underline")) {
+					contn = updateOrContinue(in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+						@Override
+						public void update(Font obj, String val) {
+							obj.underline = "true".equalsIgnoreCase(val);
+						}
+					}, contn).second;
+				}
+				else if (name.equals("deegree-font-underline-offset")) {
+					contn = updateOrContinue(in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+						@Override
+						public void update(Font obj, String val) {
+							obj.underlineOffset = Double.parseDouble(val);
+						}
+					}, contn).second;
+				}
+				else if (name.equals("deegree-font-underline-width")) {
+					contn = updateOrContinue(in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+						@Override
+						public void update(Font obj, String val) {
+							obj.underlineWidth = Double.parseDouble(val);
+						}
+					}, contn).second;
+				}
 				else if (name.equals("font-color")) {
 					skipElement(in);
 					LOG.warn(
@@ -1019,7 +1067,6 @@ public class SymbologyParser {
 				}
 			}
 		}
-
 		return new Pair<Font, Continuation<Font>>(baseOrEvaluated, contn);
 
 	}

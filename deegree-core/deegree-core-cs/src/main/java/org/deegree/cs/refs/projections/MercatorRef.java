@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.projections;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -47,6 +48,7 @@ import org.deegree.cs.projections.cylindric.Mercator;
  */
 public class MercatorRef extends ProjectionRef implements Serializable, IMercator {
 
+	@Serial
 	private static final long serialVersionUID = 9165542224421882551L;
 
 	/**

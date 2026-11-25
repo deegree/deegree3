@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.components;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -47,6 +48,7 @@ import org.deegree.cs.refs.CRSResourceRef;
  */
 public class UnitRef extends CRSResourceRef<IUnit> implements Serializable, IUnit {
 
+	@Serial
 	private static final long serialVersionUID = -8013673655718092689L;
 
 	/**

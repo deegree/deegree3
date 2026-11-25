@@ -36,6 +36,7 @@
 package org.deegree.rendering.r3d.model;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public class QualityModel<T extends QualityModelPart> implements Serializable, M
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 9016130832456126790L;
 
 	private transient static Logger LOG = LoggerFactory.getLogger(QualityModel.class);

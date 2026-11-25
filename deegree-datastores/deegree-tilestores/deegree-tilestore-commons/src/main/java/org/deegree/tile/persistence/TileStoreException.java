@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence;
 
+import java.io.Serial;
+
 /**
  * Indicates an exception that occured in the tile persistence layer.
  *
@@ -41,6 +43,7 @@ package org.deegree.tile.persistence;
  */
 public class TileStoreException extends RuntimeException {
 
+	@Serial
 	private static final long serialVersionUID = -336113433539622673L;
 
 	/**

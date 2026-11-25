@@ -127,9 +127,8 @@ public class CRSUtils {
 	 * must not be <code>null</code>
 	 * @return <code>true</code>, if the given CRS uses authoritative axis ordering,
 	 * <code>false</code> otherwise
-	 * @throws UnknownCRSException
 	 */
-	public static boolean isAxisAware(final ICRS crs) throws UnknownCRSException {
+	public static boolean isAxisAware(final ICRS crs) {
 		final String alias = crs.getAlias().toLowerCase();
 		if (isUrnEpsgIdentifier(alias) || isOgcCrsIdentifier(alias)) {
 			LOG.debug("{} is considered axis aware", alias);

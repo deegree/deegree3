@@ -36,6 +36,7 @@
 package org.deegree.rendering.r3d.model.geometry;
 
 import java.io.IOException;
+import java.io.Serial;
 
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ public class TexturedGeometry extends SimpleAccessGeometry {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -8283523043454581251L;
 
 	private final static Logger LOG = LoggerFactory.getLogger(TexturedGeometry.class);

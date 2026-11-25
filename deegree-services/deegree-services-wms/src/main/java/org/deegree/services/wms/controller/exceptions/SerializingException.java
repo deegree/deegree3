@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.exceptions;
 
+import java.io.Serial;
+
 /**
  * Indicates an exception during serializing.
  *
@@ -41,6 +43,7 @@ package org.deegree.services.wms.controller.exceptions;
  */
 public class SerializingException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 6261125723767336888L;
 
 	public SerializingException(String msg) {

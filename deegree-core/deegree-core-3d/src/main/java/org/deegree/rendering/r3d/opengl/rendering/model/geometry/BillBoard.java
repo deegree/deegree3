@@ -36,6 +36,7 @@
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -63,6 +64,7 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -2746400840307665734L;
 
 	private final static Logger LOG = LoggerFactory.getLogger(BillBoard.class);

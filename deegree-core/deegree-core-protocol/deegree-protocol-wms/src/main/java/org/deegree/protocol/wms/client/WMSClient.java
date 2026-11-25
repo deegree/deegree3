@@ -56,6 +56,9 @@ import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInf
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import javax.imageio.ImageIO;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -71,10 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-
-import javax.imageio.ImageIO;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.IOUtils;
@@ -295,29 +294,24 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 	 * @param hardParameters parameters to override in the request, may be null
 	 * @throws IOException
 	 */
-	public Pair<BufferedImage, String> getMap(GetMap getMap, Map<String, String> hardParameters, int timeout,
+	public Pair<BufferedImage, String> getMap(GetMap getMap, Map<String, String> hardParameters, int timeoutInSeconds,
 			boolean errorsInImage) throws IOException {
-		if (VERSION_111.equals(wmsVersion)) {
+		if (VERSION_111.equals(wmsVersion) || VERSION_130.equals(wmsVersion)) {
 			Worker worker = new Worker(getMap.getLayers(), getMap.getStyles(), getMap.getWidth(), getMap.getHeight(),
 					getMap.getBoundingBox(), getMap.getCoordinateSystem(), getMap.getFormat(), getMap.getTransparent(),
 					errorsInImage, false, null, hardParameters);
-
-			Pair<BufferedImage, String> result;
 			try {
-				if (timeout == -1) {
-					result = worker.call();
+				if (timeoutInSeconds == -1) {
+					return worker.call();
 				}
-				else {
-					result = Executor.getInstance().performSynchronously(worker, timeout * 1000);
-				}
+				return Executor.getInstance().performSynchronously(worker, timeoutInSeconds * 1000);
 			}
 			catch (Throwable e) {
 				throw new IOException(e.getMessage(), e);
 			}
-
-			return result;
 		}
-		throw new IllegalArgumentException("GetMap request for other versions than 1.1.1 are not supported yet.");
+		throw new IllegalArgumentException(
+				"GetMap request for other versions than 1.1.1 or 1.3.0 are not supported yet.");
 	}
 
 	/**
@@ -537,7 +531,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("request", "GetMap");
-				map.put("version", "1.1.1");
+				map.put("version", wmsVersion.toString());
 				map.put("service", "WMS");
 				map.put("layers", join(",", layers));
 				String stylesParam = "";
@@ -563,7 +557,8 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 				map.put("height", Integer.toString(reqHeight));
 				map.put("bbox", reqEnv.getMin().get0() + "," + reqEnv.getMin().get1() + "," + reqEnv.getMax().get0()
 						+ "," + reqEnv.getMax().get1());
-				map.put("srs", srs.getAlias());
+				String crsParamKey = VERSION_130.equals(wmsVersion) ? "crs" : "srs";
+				map.put(crsParamKey, srs.getAlias());
 				map.put("format", format);
 				map.put("transparent", Boolean.toString(transparent));
 				if (hardParameters != null) {
@@ -898,6 +893,10 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 		}
 		throw new IllegalArgumentException(get("WMSCLIENT.WRONG_VERSION_CAPABILITIES",
 				getIdentification().getServiceTypeVersion(), VERSION_111 + ", " + VERSION_130));
+	}
+
+	public Version getWmsVersion() {
+		return wmsVersion;
 	}
 
 	public boolean isOperationSupported(WMSRequestType request) {

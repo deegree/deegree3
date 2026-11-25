@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 /**
  * Indicates an exception in the CRS Store management.
  *
@@ -41,6 +43,7 @@ package org.deegree.cs.exceptions;
  */
 public class CRSStoreException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = -2812418632725614066L;
 
 	/**

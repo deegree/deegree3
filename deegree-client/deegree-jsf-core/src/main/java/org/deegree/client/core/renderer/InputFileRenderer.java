@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputFile.css") })
-@FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputFile")
+@FacesRenderer(componentFamily = "jakarta.faces.Input", rendererType = "org.deegree.InputFile")
 public class InputFileRenderer extends Renderer {
 
 	private static Logger LOG = LoggerFactory.getLogger(HtmlInputFile.class);

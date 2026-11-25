@@ -45,6 +45,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -77,6 +78,7 @@ public class GLViewer extends JFrame implements ActionListener {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 7698388852544865855L;
 
 	private Preferences prefs;

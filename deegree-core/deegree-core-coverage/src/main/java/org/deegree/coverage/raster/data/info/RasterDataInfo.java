@@ -39,6 +39,7 @@ package org.deegree.coverage.raster.data.info;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
  */
 public class RasterDataInfo implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 3829209281584640476L;
 
 	private final static Logger LOG = getLogger(RasterDataInfo.class);

@@ -38,6 +38,7 @@ import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.geom.AffineTransform;
+import java.io.Serial;
 import java.util.Arrays;
 
 import javax.vecmath.GMatrix;
@@ -67,6 +68,7 @@ public class Matrix extends GMatrix {
 	/**
 	 * Serial number for interoperability with different versions.
 	 */
+	@Serial
 	private static final long serialVersionUID = 3778102551617232269L;
 
 	/**

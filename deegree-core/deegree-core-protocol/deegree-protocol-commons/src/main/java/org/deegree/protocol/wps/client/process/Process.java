@@ -35,6 +35,7 @@
 package org.deegree.protocol.wps.client.process;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -64,6 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Process implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -3360483995269162381L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(Process.class);

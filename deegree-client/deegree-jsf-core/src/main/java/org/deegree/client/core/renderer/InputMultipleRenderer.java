@@ -57,7 +57,7 @@ import org.deegree.client.core.utils.RendererUtils;
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
-@FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputMultiple")
+@FacesRenderer(componentFamily = "jakarta.faces.Input", rendererType = "org.deegree.InputMultiple")
 public class InputMultipleRenderer extends Renderer {
 
 	private static final String ADD_EVENT = "AddItem";
@@ -70,7 +70,7 @@ public class InputMultipleRenderer extends Renderer {
 	public void decode(FacesContext context, UIComponent component) {
 		ExternalContext external = context.getExternalContext();
 		Map<String, String> params = external.getRequestParameterMap();
-		String behaviorEvent = params.get("javax.faces.behavior.event");
+		String behaviorEvent = params.get("jakarta.faces.behavior.event");
 
 		HtmlInputMultiple multiple = (HtmlInputMultiple) component;
 
@@ -181,7 +181,7 @@ public class InputMultipleRenderer extends Renderer {
 
 	private String getDeleteBehaviour(ResponseWriter writer, String clientId, int index) throws IOException {
 		Map<String, String> options = new HashMap<String, String>();
-		options.put("javax.faces.behavior.event", DELETE_EVENT);
+		options.put("jakarta.faces.behavior.event", DELETE_EVENT);
 		options.put("execute", clientId);
 		options.put("render", clientId);
 		options.put(INDEX_PARAM, "" + index);
@@ -194,7 +194,7 @@ public class InputMultipleRenderer extends Renderer {
 
 	private String getAddBehaviour(FacesContext context, ResponseWriter writer, String clientId) throws IOException {
 		Map<String, String> options = new HashMap<String, String>();
-		options.put("javax.faces.behavior.event", ADD_EVENT);
+		options.put("jakarta.faces.behavior.event", ADD_EVENT);
 		options.put("execute", clientId);
 		options.put("render", clientId);
 		return JavaScriptUtils.getAjaxRequest(options, clientId) + " return false;";

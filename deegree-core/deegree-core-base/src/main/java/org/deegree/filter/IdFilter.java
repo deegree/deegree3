@@ -111,6 +111,7 @@ public class IdFilter implements Filter {
 	 * @return the ids of the objects that this filter matches
 	 * @deprecated use {@link #getSelectedIds()} instead
 	 */
+	@Deprecated
 	public Set<String> getMatchingIds() {
 		return stringIds;
 	}

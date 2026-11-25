@@ -35,6 +35,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
@@ -51,6 +52,7 @@ public class PrototypeReference implements Serializable {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 417932269664979569L;
 
 	private transient String prototypeID;

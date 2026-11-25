@@ -35,6 +35,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
+import java.io.Serial;
 import java.util.ArrayList;
 
 import org.deegree.rendering.r3d.model.QualityModel;
@@ -56,6 +57,7 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 4351593641629010871L;
 
 	/**

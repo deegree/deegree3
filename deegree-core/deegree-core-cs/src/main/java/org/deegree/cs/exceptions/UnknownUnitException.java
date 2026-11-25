@@ -35,6 +35,8 @@
 
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 /**
  * The <code>UnknownUnitException</code> class notifies the user about an unknown unit
  * that was encountered and the program cannot infer a way to handle the data that has
@@ -48,6 +50,7 @@ public class UnknownUnitException extends RuntimeException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 5380200336632993642L;
 
 	/**

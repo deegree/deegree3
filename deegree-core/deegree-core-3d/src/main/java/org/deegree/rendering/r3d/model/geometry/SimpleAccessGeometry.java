@@ -36,6 +36,7 @@
 package org.deegree.rendering.r3d.model.geometry;
 
 import java.io.IOException;
+import java.io.Serial;
 
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
@@ -55,6 +56,7 @@ public class SimpleAccessGeometry implements QualityModelPart {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -5069487647474073270L;
 
 	private final static Logger LOG = LoggerFactory.getLogger(SimpleAccessGeometry.class);

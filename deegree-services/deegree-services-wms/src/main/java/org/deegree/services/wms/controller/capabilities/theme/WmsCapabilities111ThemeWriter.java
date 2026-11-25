@@ -42,6 +42,7 @@ package org.deegree.services.wms.controller.capabilities.theme;
 
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
+import static org.deegree.commons.utils.MapUtils.calcScaleHint;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
@@ -443,9 +444,9 @@ public class WmsCapabilities111ThemeWriter {
 		if (!hint.first.isInfinite() || !hint.second.isInfinite()) {
 			writer.writeStartElement("ScaleHint");
 			writer.writeAttribute("min",
-					scaleFormat.format(hint.first.isInfinite() ? MIN_VALUE : calculateScaleHint(hint.first)));
+					scaleFormat.format(hint.first.isInfinite() ? MIN_VALUE : calcScaleHint(hint.first)));
 			writer.writeAttribute("max",
-					scaleFormat.format(hint.second.isInfinite() ? MAX_VALUE : calculateScaleHint(hint.second)));
+					scaleFormat.format(hint.second.isInfinite() ? MAX_VALUE : calcScaleHint(hint.second)));
 			writer.writeEndElement();
 		}
 	}
@@ -457,11 +458,6 @@ public class WmsCapabilities111ThemeWriter {
 			writer.writeAttribute(XLNNS, "type", "simple");
 			writer.writeAttribute(XLNNS, "href", url);
 		}
-	}
-
-	private double calculateScaleHint(double scaleDenominator) {
-		double pixelSize = 0.00028;
-		return Math.sqrt(Math.pow((scaleDenominator * pixelSize), 2) * 2);
 	}
 
 }

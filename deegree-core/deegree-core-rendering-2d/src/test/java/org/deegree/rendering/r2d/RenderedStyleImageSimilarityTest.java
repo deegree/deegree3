@@ -177,7 +177,7 @@ public class RenderedStyleImageSimilarityTest extends AbstractSimilarityTest {
 		graphics.dispose();
 		LOG.debug("Took {} ms", currentTimeMillis() - time);
 
-		Assert.assertTrue("Image for " + testName + "are not similar enough",
+		Assert.assertTrue("Image for " + testName + " are not similar enough",
 				isImageSimilar(expected, actual, 0.01, prefixed(testName)));
 	}
 

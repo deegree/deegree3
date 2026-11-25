@@ -87,6 +87,7 @@ public class SchemaAnalyzer implements ToolboxRegistration {
 	 * DO NOT USE
 	 * @deprecated only use for registration purpose
 	 */
+	@Deprecated
 	public SchemaAnalyzer() {
 		this.schema = null;
 	}

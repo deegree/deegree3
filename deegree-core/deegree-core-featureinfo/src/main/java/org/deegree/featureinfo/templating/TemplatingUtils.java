@@ -43,19 +43,17 @@ package org.deegree.featureinfo.templating;
 import static java.util.Collections.singletonList;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.featureinfo.templating.lang.PropertyTemplateCall;
 import org.slf4j.Logger;
 
@@ -68,18 +66,12 @@ public class TemplatingUtils {
 
 	private static final Logger LOG = getLogger(TemplatingUtils.class);
 
-	public static void runTemplate(OutputStream response, String fiFile, FeatureCollection col, boolean geometries)
-			throws IOException {
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(response, "UTF-8"));
+	public static void runTemplate(OutputStream response, String fiFile, FeatureCollection col, boolean geometries,
+			String gfiTemplateParam) {
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(response, StandardCharsets.UTF_8));
 
 		try {
-			InputStream in;
-			if (fiFile == null) {
-				in = FeatureInfoManager.class.getResourceAsStream("html.gfi");
-			}
-			else {
-				in = new FileInputStream(fiFile);
-			}
+			InputStream in = new GfiRetriever().retrieveTemplate(fiFile, gfiTemplateParam);
 
 			CharStream input = new ANTLRInputStream(in);
 			Templating2Lexer lexer = new Templating2Lexer(input);
@@ -90,7 +82,7 @@ public class TemplatingUtils {
 
 			StringBuilder sb = new StringBuilder();
 			new PropertyTemplateCall("start", singletonList("*"), false).eval(sb, defs, col, geometries);
-			out.println(sb.toString());
+			out.println(sb);
 		}
 		catch (Throwable e) {
 			if (fiFile == null) {

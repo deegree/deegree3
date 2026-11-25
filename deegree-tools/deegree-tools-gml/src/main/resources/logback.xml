@@ -18,17 +18,8 @@
         <appender-ref ref="FILE"/>
     </root>
 
-    <logger name="org.springframework" level="warn">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-    </logger>
-    <logger name="org.springframework.batch" level="info">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-    </logger>
-    <logger name="org.deegree" level="info">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-    </logger>
+    <logger name="org.springframework" level="warn"/>
+    <logger name="org.springframework.batch" level="info"/>
+    <logger name="org.deegree" level="info"/>
 
 </configuration>

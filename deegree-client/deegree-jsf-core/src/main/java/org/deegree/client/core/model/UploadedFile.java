@@ -35,6 +35,7 @@
 package org.deegree.client.core.model;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 
@@ -48,6 +49,7 @@ import org.apache.commons.fileupload2.core.FileItem;
 @Deprecated
 public class UploadedFile implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -8302793775220721969L;
 
 	private FileItem fileItem;

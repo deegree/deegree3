@@ -163,6 +163,7 @@ public class RasterTreeGridifier implements ToolboxRegistration {
 	 * DO NOT USE
 	 * @deprecated only use for registration purpose
 	 */
+	@Deprecated
 	public RasterTreeGridifier() {
 		this.rtbBaseDir = null;
 		this.minX = 0;

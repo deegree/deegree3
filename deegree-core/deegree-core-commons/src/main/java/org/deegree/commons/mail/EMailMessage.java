@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
+import java.io.Serial;
+
 /**
  * This class encapsulates all the info need to send an email message. This object is
  * passed to the MailerEJB sendMail(...) method.
@@ -45,6 +47,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 7569652229263596515L;
 
 	private String sender;

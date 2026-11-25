@@ -32,16 +32,15 @@ import static org.deegree.console.JsfUtils.getWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 
-import jakarta.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
@@ -60,6 +59,7 @@ import org.slf4j.Logger;
 
 public class Config implements Comparable<Config>, Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -175529275940063759L;
 
 	private static final Logger LOG = getLogger(Config.class);

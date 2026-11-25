@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +57,7 @@ import org.deegree.workspace.Workspace;
  */
 public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -7795125766411006135L;
 
 	private String newConfigType;

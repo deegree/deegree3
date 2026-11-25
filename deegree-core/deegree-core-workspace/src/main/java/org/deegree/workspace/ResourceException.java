@@ -40,6 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace;
 
+import java.io.Serial;
+
 /**
  * An exception class thrown during normal workspace operation.
  *
@@ -48,6 +50,7 @@ package org.deegree.workspace;
  */
 public class ResourceException extends RuntimeException {
 
+	@Serial
 	private static final long serialVersionUID = -3984357304894851693L;
 
 	public ResourceException(String msg, Exception cause) {
