@@ -6,7 +6,7 @@
     <description>Webapp that includes deegree WMS, WFS, CSW, WPS, common datastore modules</description>
     <parent>
         <groupId>org.deegree</groupId>
-        <artifactId>deegree-services</artifactId>
+        <artifactId>deegree-webservices-parent</artifactId>
         <version>3.6.17-SNAPSHOT</version>
     </parent>
     <build>

@@ -1228,6 +1228,7 @@
     <module>deegree-themes</module>
     <module>deegree-tools</module>
     <module>deegree-workspaces</module>
+    <module>deegree-webservices</module>
   </modules>
 
   <profiles>

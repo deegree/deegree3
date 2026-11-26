@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>deegree-webservices-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>deegree-webservices-parent</name>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree</artifactId>
+    <version>3.6.17-SNAPSHOT</version>
+  </parent>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>target/generated-resources</directory>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+  </build>
+
+  <modules>
+    <module>deegree-webservices-commons</module>
+    <module>deegree-webservices-minimal</module>
+    <module>deegree-webservices-basic</module>
+    <module>deegree-webservices-full</module>
+  </modules>
+
+</project>
