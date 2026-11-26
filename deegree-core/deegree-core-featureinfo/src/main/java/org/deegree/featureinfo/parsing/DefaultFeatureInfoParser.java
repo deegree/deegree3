@@ -136,7 +136,7 @@ public class DefaultFeatureInfoParser implements FeatureInfoParser {
 				props.add(tp);
 			}
 			GenericFeatureType ft = new GenericFeatureType(new QName("feature"), props, false);
-			col.add(new GenericFeature(ft, idPrefix + "_esri_" + ++count, propValues, null));
+			col.add(new GenericFeature(ft, "id_" + idPrefix + "_esri_" + ++count, propValues, null));
 			skipElement(reader);
 			nextElement(reader);
 		}

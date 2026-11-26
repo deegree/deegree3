@@ -78,4 +78,12 @@ public class DefaultFeatureInfoParserTest {
 		Assert.assertEquals(8, fc.size());
 	}
 
+	@Test
+	public void testEsriCollectionLayerNameIsNumber() throws XMLStreamException {
+		InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream("esri1.xml");
+		FeatureCollection fc = featureInfoParser.parseAsFeatureCollection(in, "1");
+		Assert.assertEquals(1, fc.size());
+		Assert.assertFalse(fc.stream().findFirst().get().getId().matches("^[0-9].*"));
+	}
+
 }
