@@ -1,2 +1,3 @@
 org.deegree.commons.xml.schema.resolver.RedirectBrokenSchemaResolver
 org.deegree.commons.xml.schema.resolver.ClasspathSchemaCacheResolver
+org.deegree.commons.xml.schema.resolver.AuditingSchemaResolver
