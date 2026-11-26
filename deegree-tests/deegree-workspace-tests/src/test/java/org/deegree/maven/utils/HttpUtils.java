@@ -40,24 +40,25 @@
 
 package org.deegree.maven.utils;
 
-import static org.apache.http.client.protocol.ClientContext.AUTH_CACHE;
+import static org.apache.hc.client5.http.protocol.ClientContext.AUTH_CACHE;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.config.ConnectionConfig;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.AuthCache;
+import org.apache.hc.client5.http.CredentialsProvider;
+import org.apache.hc.client5.http.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.HttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.classic.BasicAuthCache;
+import org.apache.hc.client5.http.impl.classic.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+/* No generic migration for classes in the `org.apache.http.params` package exists, please migrate manually */
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.protocol.BasicHttpContext;
+import org.apache.hc.core5.http.protocol.BasicHttpContext;
 import org.deegree.maven.ithelper.ServiceIntegrationTestHelper;
 import org.deegree.maven.ithelper.TestEnvironment;
 

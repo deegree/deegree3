@@ -40,10 +40,10 @@
 
 package org.deegree.maven;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.client5.http.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.core5.util.EntityUtils;
 import org.deegree.maven.ithelper.ServiceIntegrationTestHelper;
 import org.deegree.maven.ithelper.TestEnvironment;
 import org.deegree.maven.utils.HttpUtils;
