@@ -545,12 +545,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy</artifactId>
-        <version>1.18.17</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>3.27.0-GA</version>
