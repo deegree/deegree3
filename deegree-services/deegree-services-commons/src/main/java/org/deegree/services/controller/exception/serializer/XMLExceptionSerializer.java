@@ -35,7 +35,7 @@
 
 package org.deegree.services.controller.exception.serializer;
 
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.hc.core5.http.HttpStatus.SC_NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 
 import java.io.IOException;
