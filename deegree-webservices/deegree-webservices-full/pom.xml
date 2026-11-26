@@ -46,48 +46,6 @@
           <jvmArgs>${jvm.args}</jvmArgs>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>stage-webresources</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/webresources-jar/META-INF/resources</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/src/main/webapp</directory>
-                  <excludes>
-                    <exclude>WEB-INF/**</exclude>
-                    <exclude>META-INF/**</exclude>
-                  </excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>web-resources</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <classifier>webresources</classifier>
-              <classesDirectory>${project.build.directory}/webresources-jar/</classesDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
