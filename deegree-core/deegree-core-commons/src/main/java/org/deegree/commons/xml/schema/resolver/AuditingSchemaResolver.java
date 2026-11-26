@@ -38,7 +38,8 @@ public class AuditingSchemaResolver implements SchemaResolver {
 
 	private final boolean auditEnabled = TunableParameter.get("deegree.commons.xml.schema.enable-audit-logging", true);
 
-	private final boolean blockEnabled = TunableParameter.get("deegree.commons.xml.schema.block-non-cached-schemas", false);
+	private final boolean blockEnabled = TunableParameter.get("deegree.commons.xml.schema.block-non-cached-schemas",
+			false);
 
 	@Override
 	public URL resolve(URL systemId) throws IllegalArgumentException {
@@ -57,4 +58,5 @@ public class AuditingSchemaResolver implements SchemaResolver {
 	public int getOrder() {
 		return LOWEST_PRECEDENCE;
 	}
+
 }

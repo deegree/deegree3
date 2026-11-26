@@ -121,6 +121,7 @@ public class RedirectingEntityResolverTest {
 		public String getNamespace() {
 			throw new IllegalArgumentException();
 		}
+
 	}
 
 }
