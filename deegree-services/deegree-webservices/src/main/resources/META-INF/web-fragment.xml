@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment xmlns="https://jakarta.ee/xml/ns/jakartaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                                  https://jakarta.ee/xml/ns/jakartaee/web-fragment_6_0.xsd"
+              version="6.0">
+
+  <display-name>deegree 3 OGC services console + generic client</display-name>
+
+  <context-param>
+    <param-name>jakarta.faces.FACELETS_BUFFER_SIZE</param-name>
+    <param-value>65535</param-value> <!-- 64KB -->
+  </context-param>
+
+  <context-param>
+    <param-name>jakarta.faces.SERIALIZE_SERVER_STATE</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
+  <!-- Prevent duplicate jakarta.faces.ViewState element IDs. -->
+  <context-param>
+    <param-name>com.sun.faces.enableViewStateIdRendering</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>primefaces.THEME</param-name>
+    <param-value>saga-blue</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>primefaces.UPLOADER</param-name>
+    <param-value>native</param-value>
+  </context-param>
+
+  <welcome-file-list>
+    <welcome-file>index.xhtml</welcome-file>
+  </welcome-file-list>
+
+  <error-page>
+    <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
+    <location>/index.jsf</location>
+  </error-page>
+
+</web-fragment>
