@@ -70,6 +70,8 @@ import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
@@ -114,7 +116,7 @@ public class TransformationFactory {
 
 	private final ICRS wgs84;
 
-	private CRSStore provider;
+	private final CRSStore provider;
 
 	private DSTransform preferredDSTransform;
 
@@ -166,8 +168,7 @@ public class TransformationFactory {
 	public TransformationFactory(CRSStore provider) {
 		this.provider = provider;
 		this.preferredDSTransform = provider.getPreferedTransformationType();
-
-		this.wgs84 = provider.getCRSByCode(new CRSCodeType("4326", "epsg"));
+		this.wgs84 = getWgs84(provider);
 	}
 
 	/**
@@ -1336,6 +1337,19 @@ public class TransformationFactory {
 	private Matrix4d getWGS84Parameters(final Helmert transformation) {
 		if (!isIdentity(transformation)) {
 			return transformation.getAsAffineTransform();
+		}
+		return null;
+	}
+
+	private ICRS getWgs84(CRSStore provider) {
+		ICRS wgs84 = provider.getCRSByCode(new CRSCodeType("4326", "epsg"));
+		if (wgs84 != null)
+			return wgs84;
+		try {
+			return CRSManager.lookup("EPSG:4326");
+		}
+		catch (UnknownCRSException e) {
+			LOG.warn("Could not find definition of EPSG:4326: {}", e.getMessage());
 		}
 		return null;
 	}

@@ -41,12 +41,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle;
 
-import static java.sql.Types.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.filter.comparison.ComparisonOperator.SubType.PROPERTY_IS_NIL;
-
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -59,6 +53,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNil;
 import org.deegree.filter.expression.Function;
@@ -83,16 +78,25 @@ import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.filter.expression.SQLColumn;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 import org.deegree.sqldialect.filter.islike.IsLikeString;
 
 import java.util.List;
+import java.util.Set;
+
+import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.filter.comparison.ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO;
+import static org.deegree.filter.comparison.ComparisonOperator.SubType.PROPERTY_IS_NIL;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Oracle Spatial databases.
- *
+ * <p>
  * Oracle Database Version 10g or 11g are recommended (Oracle Version 9i and 8.1.7 may
  * also work)
  *
@@ -100,6 +104,9 @@ import java.util.List;
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 class OracleWhereBuilder extends AbstractWhereBuilder {
+
+	private static final Set<String> MAPPED_PROPERTY_EQUALS_TO_FUNCTIONS_LC = Set.of("IsCurve".toLowerCase(),
+			"IsPoint".toLowerCase(), "IsSurface".toLowerCase());
 
 	private int databaseMajorVersion;
 
@@ -259,7 +266,6 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
 		SQLOperation sqlOper = null;
 
 		if (PROPERTY_IS_NIL == op.getSubType()) {
-
 			PropertyIsNil propIsNil = (PropertyIsNil) op;
 			SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
 			Expression expr = propIsNil.getPropertyName();
@@ -279,6 +285,32 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
 			PrimitiveValue pv = new PrimitiveValue(Boolean.TRUE, pt);
 			builder.add(new SQLArgument(pv, new OraclePrimitiveConverter(pt, null)));
 			sqlOper = builder.toOperation();
+		}
+		else if (PROPERTY_IS_EQUAL_TO == op.getSubType()) {
+			PropertyIsEqualTo propIsEqualTo = (PropertyIsEqualTo) op;
+
+			Expression expr1 = propIsEqualTo.getParameter1();
+			Expression expr2 = propIsEqualTo.getParameter2();
+
+			Function function = null;
+			Literal<?> literal = null;
+
+			if (expr1 instanceof Function && expr2 instanceof Literal<?>) {
+				function = (Function) expr1;
+				literal = (Literal<?>) expr2;
+			}
+			else if (expr2 instanceof Function && expr1 instanceof Literal<?>) {
+				function = (Function) expr2;
+				literal = (Literal<?>) expr1;
+			}
+
+			if (function != null && literal != null
+					&& MAPPED_PROPERTY_EQUALS_TO_FUNCTIONS_LC.contains(function.getName().toLowerCase())
+					&& function.getParameters().size() == 1
+					&& function.getParameters().get(0) instanceof ValueReference) {
+
+				sqlOper = toProtoSQL(function.getName(), (ValueReference) function.getParameters().get(0), literal);
+			}
 		}
 
 		if (sqlOper == null) {
@@ -346,6 +378,52 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
 		// set default ESCAPE Character to backslash
 		// oracle (10.2 - 12.2) defaults to have escaping disabled by default
 		builder.add(" ESCAPE '\\'");
+
+		return builder.toOperation();
+	}
+
+	private SQLOperation toProtoSQL(String functionName, ValueReference valueRef, Literal<?> literal)
+			throws UnmappableException, FilterEvaluationException {
+		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
+
+		String lit = literal.getValue().toString();
+		SQLExpression sqlExpr = toProtoSQL(valueRef);
+		if (!(sqlExpr instanceof SQLColumn))
+			return null;
+
+		builder.add(((SQLColumn) sqlExpr).getSQL().append(".SDO_GTYPE").toString());
+
+		if ("true".equalsIgnoreCase(lit) || "1".equalsIgnoreCase(lit))
+			builder.add(" IN ");
+		else
+			builder.add(" NOT IN ");
+
+		if ("IsCurve".equalsIgnoreCase(functionName)) {
+			// 2002 = 2d LINE or CURVE
+			// 2006 = 2d MULTILINE or MULTICURVE
+			// 3002 = 3d LINE or CURVE
+			// 3006 = 3d MULTILINE or MULTICURVE
+			builder.add("( 2002, 2006, 3002, 3006 )");
+		}
+		else if ("IsPoint".equalsIgnoreCase(functionName)) {
+
+			// 2001 = 2d Point
+			// 2005 = 2d MultiPoint
+			// 3001 = 3d Point
+			// 3005 = 3d MultiPoint
+			builder.add("( 2001, 2005, 3001, 3005 )");
+		}
+		else if ("IsSurface".equalsIgnoreCase(functionName)) {
+
+			// 2003 = 2d POLYGON
+			// 2007 = 2d MULTIPOLYGON
+			// 3003 = 3d POLYGON
+			// 3007 = 3d MULTIPOLYGON
+			builder.add("( 2003, 2007, 3003, 3007 )");
+		}
+		else {
+			return null;
+		}
 
 		return builder.toOperation();
 	}
