@@ -1,0 +1,4 @@
+## repository-prefixes/2.0
+# Recorded entries
+/org/deegree
+
