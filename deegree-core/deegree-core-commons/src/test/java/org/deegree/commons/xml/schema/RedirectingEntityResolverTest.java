@@ -18,7 +18,7 @@ public class RedirectingEntityResolverTest {
 		String systemId = "http://schemas.opengis.net/csw/2.0.2/record.xsd";
 		String redirected = redirectingEntityResolver.redirect(systemId);
 
-		assertThat(redirected, endsWith("/META-INF/SCHEMAS_OPENGIS_NET/csw/2.0.2/record.xsd"));
+		assertThat(redirected, endsWith("/META-INF/schema-cache/schemas.opengis.net/csw/2.0.2/record.xsd"));
 	}
 
 	@Test
