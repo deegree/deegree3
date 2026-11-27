@@ -2,6 +2,7 @@
 # Recorded entries
 /cite
 /com/sun/media
+/it/geosolutions/imageio-ext
 /it/geosolutions/jgridshift
 /java3d
 /javax/media
