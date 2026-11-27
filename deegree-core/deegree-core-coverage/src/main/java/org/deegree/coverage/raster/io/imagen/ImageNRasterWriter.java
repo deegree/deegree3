@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.io.jai;
+package org.deegree.coverage.raster.io.imagen;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,21 +52,21 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  *
  */
-public class JAIRasterWriter implements RasterWriter {
+public class ImageNRasterWriter implements RasterWriter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JAIRasterWriter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ImageNRasterWriter.class);
 
 	@Override
 	public void write(AbstractRaster raster, File file, RasterIOOptions options) throws IOException {
-		LOG.debug("writing {} with JAI", file);
+		LOG.debug("writing {} with ImageN", file);
 		String ext = FileUtils.getFileExtension(file);
-		String format = JAIRasterIOProvider.getJAIFormat(ext);
+		String format = ImageNRasterIOProvider.getImageNFormat(ext);
 		if (format != null) {
-			JAIRasterDataWriter.saveRasterDataToFile(raster.getAsSimpleRaster().getRasterData(), file.getAbsolutePath(),
-					format);
+			ImageNRasterDataWriter.saveRasterDataToFile(raster.getAsSimpleRaster().getRasterData(),
+					file.getAbsolutePath(), format);
 		}
 		else {
-			JAIRasterDataWriter.saveRasterDataToFile(raster.getAsSimpleRaster().getRasterData(),
+			ImageNRasterDataWriter.saveRasterDataToFile(raster.getAsSimpleRaster().getRasterData(),
 					file.getAbsolutePath());
 		}
 		RasterGeoReference rasterReference = raster.getRasterReference();
@@ -75,14 +75,14 @@ public class JAIRasterWriter implements RasterWriter {
 
 	@Override
 	public void write(AbstractRaster raster, OutputStream out, RasterIOOptions options) throws IOException {
-		LOG.debug("writing to stream with JAI");
+		LOG.debug("writing to stream with ImageN");
 		String ext = options.get(RasterIOOptions.OPT_FORMAT);
-		String format = JAIRasterIOProvider.getJAIFormat(ext);
+		String format = ImageNRasterIOProvider.getImageNFormat(ext);
 		if (format != null) {
-			JAIRasterDataWriter.saveRasterDataToStream(raster.getAsSimpleRaster().getRasterData(), out, format);
+			ImageNRasterDataWriter.saveRasterDataToStream(raster.getAsSimpleRaster().getRasterData(), out, format);
 		}
 		else {
-			JAIRasterDataWriter.saveRasterDataToStream(raster.getAsSimpleRaster().getRasterData(), out, "TIFF");
+			ImageNRasterDataWriter.saveRasterDataToStream(raster.getAsSimpleRaster().getRasterData(), out, "TIFF");
 		}
 	}
 
@@ -93,7 +93,7 @@ public class JAIRasterWriter implements RasterWriter {
 
 	@Override
 	public Set<String> getSupportedFormats() {
-		return JAIRasterIOProvider.SUPPORTED_TYPES;
+		return ImageNRasterIOProvider.SUPPORTED_TYPES;
 	}
 
 }

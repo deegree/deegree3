@@ -54,7 +54,7 @@ public class IIORasterDataWriter {
 	/**
 	 * Saves a RasterData to file.
 	 *
-	 * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
+	 * The format must be supported by ImageN (i.e. BMP, JPEG, PNG, PNM, TIFF)
 	 * @param sourceRaster RasterData to save
 	 * @param file file for output raster image
 	 * @param format format for output raster
@@ -71,7 +71,7 @@ public class IIORasterDataWriter {
 	/**
 	 * Saves a RasterData to stream.
 	 *
-	 * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
+	 * The format must be supported by ImageN (i.e. BMP, JPEG, PNG, PNM, TIFF)
 	 * @param sourceRaster RasterData to save
 	 * @param out stream for output raster image
 	 * @param format format for output raster

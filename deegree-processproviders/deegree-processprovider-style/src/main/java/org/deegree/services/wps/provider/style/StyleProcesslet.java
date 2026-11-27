@@ -61,8 +61,8 @@ import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.PNGEncodeParam;
+import org.eclipse.imagen.media.codec.ImageCodec;
+import org.eclipse.imagen.media.codec.PNGEncodeParam;
 
 /**
  * TODO add class documentation here
@@ -105,7 +105,7 @@ public class StyleProcesslet implements Processlet {
 				byte[] b = new byte[] { -127 };
 				p.setPaletteTransparency(b);
 			}
-			com.sun.media.jai.codec.ImageEncoder encoder = ImageCodec.createImageEncoder("PNG", os, encodeParam);
+			org.eclipse.imagen.media.codec.ImageEncoder encoder = ImageCodec.createImageEncoder("PNG", os, encodeParam);
 			encoder.encode(img.getData(), img.getColorModel());
 		}
 		catch (Exception e) {

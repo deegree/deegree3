@@ -41,10 +41,10 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.jai.WarpCubic;
-import javax.media.jai.WarpGeneralPolynomial;
-import javax.media.jai.WarpPolynomial;
-import javax.media.jai.WarpQuadratic;
+import org.eclipse.imagen.WarpCubic;
+import org.eclipse.imagen.WarpGeneralPolynomial;
+import org.eclipse.imagen.WarpPolynomial;
+import org.eclipse.imagen.WarpQuadratic;
 import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSIdentifiable;
@@ -211,9 +211,9 @@ public class LeastSquareApproximation extends PolynomialTransformation {
 		LOG.info(sb.toString());
 
 		/**
-		 * create warp object from reference points and desired interpolation, Because jai
-		 * only implements the mapDestPoint function, we must calculate the polynomial
-		 * variables by using the target coordinates as the source.
+		 * create warp object from reference points and desired interpolation, Because
+		 * imagen only implements the mapDestPoint function, we must calculate the
+		 * polynomial variables by using the target coordinates as the source.
 		 */
 		WarpPolynomial warp = WarpPolynomial.createWarp(targetCoords, 0, sourceCoords, 0, sourceCoords.length, sX, sY,
 				1f / sX, 1f / sY, polynomalOrder);

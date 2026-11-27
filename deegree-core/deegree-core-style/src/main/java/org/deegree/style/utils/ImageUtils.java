@@ -39,7 +39,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.awt.image.DataBuffer.TYPE_BYTE;
 import static java.awt.image.Raster.createBandedRaster;
-import static javax.media.jai.operator.ColorQuantizerDescriptor.MEDIANCUT;
+import static org.eclipse.imagen.operator.ColorQuantizerDescriptor.MEDIANCUT;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -48,10 +48,10 @@ import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.BandSelectDescriptor;
-import javax.media.jai.operator.ColorQuantizerDescriptor;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.media.bandselect.BandSelectDescriptor;
+import org.eclipse.imagen.operator.ColorQuantizerDescriptor;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>

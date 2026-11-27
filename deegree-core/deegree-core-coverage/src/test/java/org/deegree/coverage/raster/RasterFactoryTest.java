@@ -53,11 +53,11 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.BorderExtender;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.RenderedOp;
+import org.eclipse.imagen.BorderExtender;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.ParameterBlockImageN;
+import org.eclipse.imagen.RenderedOp;
 
 import junit.framework.Assert;
 
@@ -133,9 +133,9 @@ public class RasterFactoryTest {
 
 		long t = System.currentTimeMillis();
 
-		RenderedOp jpg = getJAIImage("test_tiled_image.jpg");
-		RenderedOp tiff = getJAIImage("test_tiled_image_lzw.tif");
-		RenderedOp tiffNone = getJAIImage("test_tiled_image.tif");
+		RenderedOp jpg = getImageNImage("test_tiled_image.jpg");
+		RenderedOp tiff = getImageNImage("test_tiled_image_lzw.tif");
+		RenderedOp tiffNone = getImageNImage("test_tiled_image.tif");
 
 		LOG.debug("jpg:  {}, {}", jpg.getWidth(), jpg.getHeight());
 		LOG.debug("tiff:  {}, {}", tiff.getWidth(), tiff.getHeight());
@@ -169,11 +169,11 @@ public class RasterFactoryTest {
 		}
 
 		ret = currentTimeMillis();
-		saveSubset(tiff, "jai_tif_1", 0, 0, 250, 260);
+		saveSubset(tiff, "imagen_tif_1", 0, 0, 250, 260);
 		LOG.debug("compressed tiff subset 1: {}millis", (currentTimeMillis() - ret));
 
 		ret = currentTimeMillis();
-		saveSubset(tiff, "jai_tif_2", 4998, 4900, 10500, 13080);
+		saveSubset(tiff, "imagen_tif_2", 4998, 4900, 10500, 13080);
 		LOG.debug("compressed tiff subset 2: {}millis", (currentTimeMillis() - ret));
 
 		gc();
@@ -188,13 +188,13 @@ public class RasterFactoryTest {
 			tiff.notifyAll();
 		}
 		ret = currentTimeMillis();
-		saveSubset(tiffNone, "jai_tif_none_1", 0, 0, 250, 260);
+		saveSubset(tiffNone, "imagen_tif_none_1", 0, 0, 250, 260);
 		LOG.debug("tiff subset 1: {}millis", (currentTimeMillis() - ret));
 		ret = currentTimeMillis();
-		saveSubset(tiffNone, "jai_tif_none_2", 4998, 4900, 10500, 13080);
+		saveSubset(tiffNone, "imagen_tif_none_2", 4998, 4900, 10500, 13080);
 		LOG.debug("tiff subset 2: {}millis", (currentTimeMillis() - ret));
 
-		LOG.debug("jai total: {}millis", (currentTimeMillis() - t));
+		LOG.debug("imagen total: {}millis", (currentTimeMillis() - t));
 		t = System.currentTimeMillis();
 	}
 
@@ -210,7 +210,7 @@ public class RasterFactoryTest {
 		LOG.debug("wrote subset: {}", name);
 	}
 
-	private RenderedOp getJAIImage(String file) throws IOException, URISyntaxException {
+	private RenderedOp getImageNImage(String file) throws IOException, URISyntaxException {
 
 		// jpg: 15000, 15000
 		// tiff: 20000, 20000
@@ -222,20 +222,20 @@ public class RasterFactoryTest {
 		// wrote subset: jpg
 		// jpg subset 2: 13248millis
 		// done getting jpg.
-		// getting subset: jai_tif_1
-		// wrote subset: jai_tif_1
+		// getting subset: imagen_tif_1
+		// wrote subset: imagen_tif_1
 		// compressed tiff subset 1: 249millis
-		// getting subset: jai_tif_2
-		// wrote subset: jai_tif_2
+		// getting subset: imagen_tif_2
+		// wrote subset: imagen_tif_2
 		// compressed tiff subset 2: 6115millis
 		// done getting compressed.
-		// getting subset: jai_tif_none_1
-		// wrote subset: jai_tif_none_1
+		// getting subset: imagen_tif_none_1
+		// wrote subset: imagen_tif_none_1
 		// tiff subset 1: 94millis
-		// getting subset: jai_tif_none_2
-		// wrote subset: jai_tif_none_2
+		// getting subset: imagen_tif_none_2
+		// wrote subset: imagen_tif_none_2
 		// tiff subset 2: 4532millis
-		// jai total: 44543millis
+		// imagen total: 44543millis
 
 		File f = new File(RasterFactoryTest.class.getResource(file).toURI());
 		ImageInputStream iis = ImageIO.createImageInputStream(f);
@@ -261,23 +261,23 @@ public class RasterFactoryTest {
 		ImageLayout layout = new ImageLayout();
 		layout.setTileWidth(TILE_SIZE);
 		layout.setTileHeight(TILE_SIZE);
-		hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+		hints = new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, layout);
 		// }
 		reader.dispose();
 		iis.close();
-		ParameterBlockJAI pbj = new ParameterBlockJAI("ImageRead");
+		ParameterBlockImageN pbj = new ParameterBlockImageN("ImageRead");
 		iis = ImageIO.createImageInputStream(f);
 		pbj.setParameter("Input", iis);
 
-		return JAI.create("ImageRead", pbj, hints);
+		return ImageN.create("ImageRead", pbj, hints);
 	}
 
 	// private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis )
 	// {
-	// ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
+	// ParameterBlockImageN pbj = new ParameterBlockImageN( "ImageRead" );
 	// pbj.setParameter( "Input", iis );
 	//
-	// RenderedOp result = JAI.create( "ImageRead", pbj, null );
+	// RenderedOp result = ImageN.create( "ImageRead", pbj, null );
 	//
 	// int width = result.getWidth();
 	// int height = result.getHeight();
@@ -287,13 +287,13 @@ public class RasterFactoryTest {
 	// ImageLayout layout = new ImageLayout();
 	// layout.setTileWidth( tileSize );
 	// layout.setTileHeight( tileSize );
-	// result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
+	// result.setRenderingHint( ImageN.KEY_IMAGE_LAYOUT, layout );
 	// }
 	//
-	// private void outputJAIParams() {
-	// JAI jai = JAI.getDefaultInstance();
-	// OperationRegistry reg = jai.getOperationRegistry();
-	// RenderingHints renderingHints = jai.getRenderingHints();
+	// private void outputImageNParams() {
+	// ImageN imagen = ImageN.getDefaultInstance();
+	// OperationRegistry reg = imagen.getOperationRegistry();
+	// RenderingHints renderingHints = imagen.getRenderingHints();
 	// LOG.debug( "values: " + renderingHints.values() );
 	//
 	// String[] modeNames = RegistryMode.getModeNames();

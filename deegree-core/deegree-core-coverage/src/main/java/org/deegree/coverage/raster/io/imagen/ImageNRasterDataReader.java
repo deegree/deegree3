@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.io.jai;
+package org.deegree.coverage.raster.io.imagen;
 
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 
@@ -41,7 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.media.jai.JAI;
+import org.eclipse.imagen.ImageN;
 
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
@@ -50,8 +50,8 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.media.jai.codec.FileSeekableStream;
-import com.sun.media.jai.codec.SeekableStream;
+import org.eclipse.imagen.media.codec.FileSeekableStream;
+import org.eclipse.imagen.media.codec.SeekableStream;
 
 /**
  * This class implements a simple reader for raster files.
@@ -64,9 +64,9 @@ import com.sun.media.jai.codec.SeekableStream;
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  *
  */
-public class JAIRasterDataReader implements RasterDataReader {
+public class ImageNRasterDataReader implements RasterDataReader {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JAIRasterDataReader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ImageNRasterDataReader.class);
 
 	private File file;
 
@@ -83,21 +83,21 @@ public class JAIRasterDataReader implements RasterDataReader {
 	private RasterIOOptions options;
 
 	/**
-	 * Create a JAIRasterReader for given file
+	 * Create a ImageNRasterReader for given file
 	 * @param file file to read
 	 * @param options holding information
 	 */
-	public JAIRasterDataReader(File file, RasterIOOptions options) {
+	public ImageNRasterDataReader(File file, RasterIOOptions options) {
 		this(options);
 		this.file = file;
 	}
 
 	/**
-	 * Create a JAIRasterReader for given stream
+	 * Create a ImageNRasterReader for given stream
 	 * @param stream stream to read
 	 * @param options holding information
 	 */
-	public JAIRasterDataReader(InputStream stream, RasterIOOptions options) {
+	public ImageNRasterDataReader(InputStream stream, RasterIOOptions options) {
 		this(options);
 		this.inputStream = stream;
 	}
@@ -105,7 +105,7 @@ public class JAIRasterDataReader implements RasterDataReader {
 	/**
 	 * @param options
 	 */
-	private JAIRasterDataReader(RasterIOOptions options) {
+	private ImageNRasterDataReader(RasterIOOptions options) {
 		this.options = options;
 	}
 
@@ -186,13 +186,13 @@ public class JAIRasterDataReader implements RasterDataReader {
 			throw new IOException("Imagestream was null.");
 		}
 		try {
-			// jai_imageio registers ImageRead with support for more formats (eg. JPEG
+			// imagen registers ImageRead with support for more formats (eg. JPEG
 			// 2000)
-			return JAI.create("ImageRead", stream);
+			return ImageN.create("ImageRead", stream);
 		}
 		catch (IllegalArgumentException ex) {
 			// else use build in "fileload"
-			return JAI.create("stream", stream);
+			return ImageN.create("stream", stream);
 		}
 	}
 
