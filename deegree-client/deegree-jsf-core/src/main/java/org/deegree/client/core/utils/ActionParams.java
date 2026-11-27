@@ -34,73 +34,70 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.utils;
 
-import jakarta.el.ELContext;
-import jakarta.el.ELResolver;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.faces.application.Application;
-import jakarta.faces.context.FacesContext;
+import jakarta.faces.annotation.ManagedProperty;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
 
 /**
- * Utility class to provide a workaround for the missing parameters for action expressions
- * in JSF versions before 2.2.
+ * Utility class to provide access to multiple parameters for action expressions.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:friebe@lat-lon.de">Torsten Friebe</a>
  */
 @Named("actionParams")
 @RequestScoped
 public class ActionParams implements Serializable {
 
+	@ManagedProperty("#{param.param1}")
 	private Object param1;
 
+	@ManagedProperty("#{param.param2}")
 	private Object param2;
 
+	@ManagedProperty("#{param.param3}")
 	private Object param3;
 
+	@ManagedProperty("#{param.param4}")
 	private Object param4;
 
 	public void setParam1(Object param1) {
 		this.param1 = param1;
 	}
 
-	public static Object getParam1() {
-		return getInstance().param1;
+	public Object getParam1() {
+		return param1;
 	}
 
 	public void setParam2(Object param2) {
 		this.param2 = param2;
 	}
 
-	public static Object getParam2() {
-		return getInstance().param2;
+	public Object getParam2() {
+		return param2;
 	}
 
 	public void setParam3(Object param3) {
 		this.param3 = param3;
 	}
 
-	public static Object getParam3() {
-		return getInstance().param3;
+	public Object getParam3() {
+		return param3;
 	}
 
 	public void setParam4(Object param4) {
 		this.param4 = param4;
 	}
 
-	public static Object getParam4() {
-		return getInstance().param4;
+	public Object getParam4() {
+		return param4;
 	}
 
-	private static ActionParams getInstance() {
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		Application application = facesContext.getApplication();
-
-		ELResolver elResolver = application.getELResolver();
-		ELContext elContext = facesContext.getELContext();
-
-		return (ActionParams) elResolver.getValue(elContext, null, "actionParams");
+	@Override
+	public String toString() {
+		return "ActionParams{" + "param1=" + param1 + ", param2=" + param2 + ", param3=" + param3 + ", param4=" + param4
+				+ '}';
 	}
 
 }
