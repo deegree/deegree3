@@ -249,7 +249,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.9.0</version>
+        <version>1.10.0</version>
         <inherited>false</inherited>
         <configuration>
           <flattenMode>bom</flattenMode>
@@ -439,7 +439,7 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.12.1</version>
+            <version>1.13.0</version>
           </dependency>
         </dependencies>
       </plugin>
