@@ -1,0 +1,9 @@
+## repository-prefixes/2.0
+# Recorded entries
+/cite
+/com/sun/media
+/it/geosolutions/jgridshift
+/java3d
+/javax/media
+/jogl
+/org/deegree
