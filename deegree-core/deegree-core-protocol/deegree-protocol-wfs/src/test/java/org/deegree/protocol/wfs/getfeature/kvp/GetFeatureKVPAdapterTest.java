@@ -34,18 +34,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature.kvp;
 
+import static org.deegree.protocol.wfs.KvpTestUtils.readFileIntoMap;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import javax.xml.namespace.QName;
+import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import junit.framework.TestCase;
-
-import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
@@ -138,8 +136,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_1() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_1);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_1);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		assertEquals(new QName("INWATERA_1M"),
@@ -151,8 +149,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_1() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_1);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_1);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -165,8 +163,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_2() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_2);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_2);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get(0);
@@ -183,8 +181,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_2() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_2);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_2);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -203,8 +201,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_3() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_3);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_3);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries().get(0);
@@ -216,8 +214,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_3() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_3);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_3);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -231,8 +229,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_4() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_4);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_4);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -251,8 +249,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_4() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_4);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_4);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		assertEquals(((PropertyName) ((FeatureIdQuery) getFeature.getQueries().get(0)).getProjectionClauses()[0])
@@ -270,8 +268,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_5() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_5);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_5);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -287,8 +285,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_5() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_5);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_5);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -304,8 +302,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_6() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_6);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_6);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -335,8 +333,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_6() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_6);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_6);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get(0);
@@ -364,8 +362,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_7() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_7);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_7);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get(0);
@@ -381,8 +379,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_7() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_7);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_7);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery filterq = (FilterQuery) getFeature.getQueries().get(0);
@@ -401,8 +399,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_8() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_8);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_8);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery filterq = (FilterQuery) getFeature.getQueries().get(0);
@@ -434,8 +432,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_9() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_9);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_9);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery filterQuery0 = (FilterQuery) getFeature.getQueries().get(0);
@@ -449,8 +447,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_9() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_9);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_9);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery query0 = (FilterQuery) getFeature.getQueries().get(0);
@@ -466,8 +464,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_10() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_10);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_10);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 
@@ -489,8 +487,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_10() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_10);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_10);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery query0 = (FilterQuery) getFeature.getQueries().get(0);
@@ -510,8 +508,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_11() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_11);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_11);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery query = (FeatureIdQuery) getFeature.getQueries().get(0);
@@ -524,8 +522,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_11() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_11);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_11);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery query = (FeatureIdQuery) getFeature.getQueries().get(0);
@@ -538,8 +536,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V100_EXAMPLE_12() throws Exception {
-		URL exampleURL = this.getClass().getResource(V100_EXAMPLE_12);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V100_EXAMPLE_12);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get(0);
@@ -560,8 +558,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_12() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_12);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_12);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery query0 = (FeatureIdQuery) getFeature.getQueries().get(0);
 		FeatureIdQuery query1 = (FeatureIdQuery) getFeature.getQueries().get(1);
@@ -580,8 +578,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_13() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_13);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_13);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery query0 = (FilterQuery) getFeature.getQueries().get(0);
@@ -608,8 +606,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_14() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_14);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_14);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery filter0 = (FilterQuery) getFeature.getQueries().get(0);
@@ -643,8 +641,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_15() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_15);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_15);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries().get(0);
@@ -662,8 +660,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_16() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_16);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_16);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		assertEquals("1", getFeature.getResolveParams().getDepth());
@@ -675,8 +673,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_17() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_17);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_17);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries().get(0);
@@ -695,8 +693,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	 */
 	@Test
 	public void test_V110_EXAMPLE_sortby() throws Exception {
-		URL exampleURL = this.getClass().getResource(V110_EXAMPLE_sortby);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = this.getClass().getResourceAsStream(V110_EXAMPLE_sortby);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMap, null);
 		FilterQuery filterQuery = (FilterQuery) getFeature.getQueries().get(0);
@@ -952,8 +950,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 	}
 
 	private GetFeature parse(String resource) throws Exception {
-		URL exampleURL = GetFeatureKVPAdapterTest.class.getResource(resource);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = GetFeatureKVPAdapterTest.class.getResourceAsStream(resource);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 		return GetFeatureKVPAdapter.parse(kvpMap, null);
 	}
 
