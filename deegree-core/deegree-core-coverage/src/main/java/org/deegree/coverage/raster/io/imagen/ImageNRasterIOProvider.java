@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.io.jai;
+package org.deegree.coverage.raster.io.imagen;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,17 +44,17 @@ import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
 
 /**
- * This class is a RasterIOProvider and makes the JAIRasterReader and JAIRasterWriter
- * available to the deegree raster IO.
+ * This class is a RasterIOProvider and makes the ImageNRasterReader and
+ * ImageNRasterWriter available to the deegree raster IO.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  */
-public class JAIRasterIOProvider implements RasterIOProvider {
+public class ImageNRasterIOProvider implements RasterIOProvider {
 
-	/** Holds the list of supported image formats of the JAI library. */
+	/** Holds the list of supported image formats of the ImageN library. */
 	protected static final Set<String> SUPPORTED_TYPES;
 
-	// maps a file extension to the JAI type name
+	// maps a file extension to the ImageN type name
 	private static Map<String, String> EXT_TO_FORMAT;
 
 	static {
@@ -73,17 +73,14 @@ public class JAIRasterIOProvider implements RasterIOProvider {
 		EXT_TO_FORMAT.put("tiff", "TIFF");
 
 		SUPPORTED_TYPES = new HashSet<String>();
-		// SUPPORTED_TYPES.add( JAIRasterReader.class.getCanonicalName() );
-		// SUPPORTED_TYPES.add( "jai" );
-		// SUPPORTED_TYPES.add( "jai-reader" );
 		SUPPORTED_TYPES.addAll(EXT_TO_FORMAT.keySet());
 	}
 
 	/**
 	 * @param extension
-	 * @return the JAI format name for extension
+	 * @return the ImageN format name for extension
 	 */
-	static String getJAIFormat(String extension) {
+	static String getImageNFormat(String extension) {
 		return EXT_TO_FORMAT.get(extension);
 	}
 
@@ -92,7 +89,7 @@ public class JAIRasterIOProvider implements RasterIOProvider {
 		if (!SUPPORTED_TYPES.contains(type.toLowerCase())) {
 			return null;
 		}
-		return new JAIRasterReader();
+		return new ImageNRasterReader();
 	}
 
 	@Override
@@ -100,7 +97,7 @@ public class JAIRasterIOProvider implements RasterIOProvider {
 		if (!SUPPORTED_TYPES.contains(type.toLowerCase())) {
 			return null;
 		}
-		return new JAIRasterWriter();
+		return new ImageNRasterWriter();
 	}
 
 	@Override

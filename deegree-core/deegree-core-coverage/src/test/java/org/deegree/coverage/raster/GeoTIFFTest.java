@@ -58,7 +58,7 @@ import org.junit.Test;
 /**
  * This class tests the loading of GeoTIFF files. It doesn't test the various TIFF
  * formats, but only the georeferencing metadata. Be careful this test will only work with
- * the IIORasterReader, the JAIRasterReader doesn't support meta-data reading (yet?).
+ * the IIORasterReader, the ImageNRasterReader doesn't support meta-data reading (yet?).
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  *

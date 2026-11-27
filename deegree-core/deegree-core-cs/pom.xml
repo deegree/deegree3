@@ -42,8 +42,8 @@
       <artifactId>jakarta.activation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jai-core</artifactId>
+      <groupId>org.eclipse.imagen</groupId>
+      <artifactId>imagen-legacy-all</artifactId>
     </dependency>
     <dependency>
       <groupId>java3d</groupId>

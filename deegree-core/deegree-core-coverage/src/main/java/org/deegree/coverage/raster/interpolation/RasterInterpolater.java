@@ -37,7 +37,7 @@ package org.deegree.coverage.raster.interpolation;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.jai.WarpPolynomial;
+import org.eclipse.imagen.WarpPolynomial;
 import javax.vecmath.Point3d;
 
 import org.deegree.coverage.raster.AbstractRaster;

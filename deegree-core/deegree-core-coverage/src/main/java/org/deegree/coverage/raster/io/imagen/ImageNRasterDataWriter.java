@@ -32,14 +32,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.io.jai;
+package org.deegree.coverage.raster.io.imagen;
 
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
 
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
 
-import javax.media.jai.JAI;
+import org.eclipse.imagen.ImageN;
 
 import org.deegree.coverage.raster.data.RasterData;
 import org.slf4j.Logger;
@@ -52,9 +52,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  */
-public class JAIRasterDataWriter {
+public class ImageNRasterDataWriter {
 
-	private static Logger LOG = LoggerFactory.getLogger(JAIRasterDataWriter.class);
+	private static Logger LOG = LoggerFactory.getLogger(ImageNRasterDataWriter.class);
 
 	/**
 	 * Saves a RasterData to TIFF file
@@ -62,13 +62,13 @@ public class JAIRasterDataWriter {
 	 * @param filename filename for output raster image
 	 */
 	public static void saveRasterDataToFile(RasterData rasterData, String filename) {
-		JAIRasterDataWriter.saveRasterDataToFile(rasterData, filename, "TIFF");
+		ImageNRasterDataWriter.saveRasterDataToFile(rasterData, filename, "TIFF");
 	}
 
 	/**
 	 * Saves a RasterData to file.
 	 *
-	 * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
+	 * The format must be supported by ImageN (i.e. BMP, JPEG, PNG, PNM, TIFF)
 	 * @param sourceRaster RasterData to save
 	 * @param filename filename for output raster image
 	 * @param format format for output raster
@@ -76,21 +76,21 @@ public class JAIRasterDataWriter {
 	public static void saveRasterDataToFile(RasterData sourceRaster, String filename, String format) {
 		BufferedImage result = rasterDataToImage(sourceRaster);
 		try {
-			// jai_imageio registers ImageWrite with support for more formats (eg. JPEG
+			// imagen registers ImageWrite with support for more formats (eg. JPEG
 			// 2000)
 			LOG.debug("trying to write: {} with format: {}", filename, format);
-			JAI.create("ImageWrite", result, filename, format, null);
+			ImageN.create("ImageWrite", result, filename, format, null);
 		}
 		catch (IllegalArgumentException ex) {
 			// else use build in "filestore"
-			JAI.create("filestore", result, filename, format, null);
+			ImageN.create("filestore", result, filename, format, null);
 		}
 	}
 
 	/**
 	 * Saves a RasterData to stream.
 	 *
-	 * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
+	 * The format must be supported by ImageN (i.e. BMP, JPEG, PNG, PNM, TIFF)
 	 * @param sourceRaster RasterData to save
 	 * @param stream stream for output raster image
 	 * @param format format for output raster
@@ -98,14 +98,14 @@ public class JAIRasterDataWriter {
 	public static void saveRasterDataToStream(RasterData sourceRaster, OutputStream stream, String format) {
 		BufferedImage result = rasterDataToImage(sourceRaster);
 		try {
-			// jai_imageio registers ImageWrite with support for more formats (eg. JPEG
+			// imagen registers ImageWrite with support for more formats (eg. JPEG
 			// 2000)
 			LOG.debug("trying to write to stream with format: {}", format);
-			JAI.create("ImageWrite", result, stream, format, null);
+			ImageN.create("ImageWrite", result, stream, format, null);
 		}
 		catch (IllegalArgumentException ex) {
 			// else use build in "filestore"
-			JAI.create("encode", result, stream, format, null);
+			ImageN.create("encode", result, stream, format, null);
 		}
 	}
 

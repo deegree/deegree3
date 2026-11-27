@@ -38,7 +38,7 @@ import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 
 import java.util.List;
 
-import javax.media.jai.PerspectiveTransform;
+import org.eclipse.imagen.PerspectiveTransform;
 import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;

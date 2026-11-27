@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.io.jai;
+package org.deegree.coverage.raster.io.imagen;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
-import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -57,14 +56,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A JAI based raster reader, rb: should be refactored to use the 'new' tiling raster api.
+ * A ImageN based raster reader, rb: should be refactored to use the 'new' tiling raster
+ * api.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  *
  */
-public class JAIRasterReader implements RasterReader {
+public class ImageNRasterReader implements RasterReader {
 
-	private static Logger LOG = LoggerFactory.getLogger(JAIRasterReader.class);
+	private static Logger LOG = LoggerFactory.getLogger(ImageNRasterReader.class);
 
 	private File file = null;
 
@@ -74,26 +74,26 @@ public class JAIRasterReader implements RasterReader {
 
 	private int height;
 
-	private JAIRasterDataReader reader;
+	private ImageNRasterDataReader reader;
 
 	private String dataLocationId;
 
 	@Override
 	public AbstractRaster load(File file, RasterIOOptions options) {
-		LOG.debug("reading {} with JAI", file);
-		reader = new JAIRasterDataReader(file, options);
+		LOG.debug("reading {} with ImageN", file);
+		reader = new ImageNRasterDataReader(file, options);
 
 		return loadFromReader(reader, options);
 	}
 
 	@Override
 	public AbstractRaster load(InputStream stream, RasterIOOptions options) throws IOException {
-		LOG.debug("reading from stream with JAI");
-		reader = new JAIRasterDataReader(stream, options);
+		LOG.debug("reading from stream with ImageN");
+		reader = new ImageNRasterDataReader(stream, options);
 		return loadFromReader(reader, options);
 	}
 
-	private AbstractRaster loadFromReader(JAIRasterDataReader reader, RasterIOOptions options) {
+	private AbstractRaster loadFromReader(ImageNRasterDataReader reader, RasterIOOptions options) {
 		width = reader.getColumns();
 		height = reader.getRows();
 		setID(options);
@@ -144,7 +144,7 @@ public class JAIRasterReader implements RasterReader {
 
 	@Override
 	public Set<String> getSupportedFormats() {
-		return JAIRasterIOProvider.SUPPORTED_TYPES;
+		return ImageNRasterIOProvider.SUPPORTED_TYPES;
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class JAIRasterReader implements RasterReader {
 
 	@Override
 	public BufferResult read(RasterRect rect, ByteBuffer buffer) throws IOException {
-		throw new UnsupportedOperationException("Not yet implemented for the JAI readers");
+		throw new UnsupportedOperationException("Not yet implemented for the ImageN readers");
 	}
 
 	@Override
