@@ -36,7 +36,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getpropertyvalue.kvp;
 
-import static org.deegree.commons.utils.kvp.KVPUtils.readFileIntoMap;
+import static org.deegree.protocol.wfs.KvpTestUtils.readFileIntoMap;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import java.util.Map;
@@ -45,12 +45,10 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.logical.And;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
-import org.deegree.protocol.wfs.getpropertyvalue.kvp.GetPropertyValueKVPAdapter;
 import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.StoredQuery;
 import org.junit.Test;
@@ -64,8 +62,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example1() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example1.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example1.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals("myns:mailAddress/myns:Address/myns:city", request.getValueReference().getAsText());
@@ -76,8 +73,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example2() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example2.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example2.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals(ResolveMode.LOCAL, request.getResolveParams().getMode());
@@ -92,8 +88,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example3() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example3.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example3.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals("valueOf(myns:livesIn)/valueOf(myns:frontsOn)/abc:numLanes",
@@ -107,8 +102,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example4() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example4.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example4.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals("valueOf(myns:livesIn)/valueof(myns:mailAddress)/myns:postalCode",
@@ -122,8 +116,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example5() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example5.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example5.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals("myns:age", request.getValueReference().getAsText());
@@ -136,8 +129,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example6() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example6.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example6.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals("myns:phone", request.getValueReference().getAsText());
@@ -150,8 +142,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example7() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example7.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example7.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals("myns:phone[2]", request.getValueReference().getAsText());
@@ -164,8 +155,7 @@ public class GetPropertyValueKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example8() throws Exception {
-		Map<String, String> kvpParams = readFileIntoMap(
-				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example8.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example8.kvp"));
 		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
 		assertEquals(VERSION_200, request.getVersion());
 		assertEquals("valueOf(myns:livesIn)/myns:frontsOn", request.getValueReference().getAsText());

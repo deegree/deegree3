@@ -34,11 +34,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature.kvp;
 
+import static org.deegree.protocol.wfs.KvpTestUtils.readFileIntoMap;
+
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Map;
 
-import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.query.AdHocQuery;
 import org.deegree.protocol.wfs.query.Query;
@@ -92,8 +93,8 @@ public class GetFeature200KVPEncoderTest {
 	}
 
 	private static Map<String, String> asKvp(String name) throws IOException {
-		URL exampleURL = GetFeature200KVPEncoderParameterizedTest.class.getResource(name);
-		return KVPUtils.readFileIntoMap(exampleURL);
+		InputStream kvpStream = GetFeature200KVPEncoderParameterizedTest.class.getResourceAsStream(name);
+		return readFileIntoMap(kvpStream);
 	}
 
 }

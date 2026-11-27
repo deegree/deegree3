@@ -34,13 +34,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeaturewithlock.kvp;
 
+import static org.deegree.protocol.wfs.KvpTestUtils.readFileIntoMap;
+
+import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.junit.Test;
 
@@ -59,18 +60,18 @@ public class GetFeatureWithLockKVPAdapterTest extends TestCase {
 	private final String EXAMPLE2WFS200 = "wfs200/example2.kvp";
 
 	@Test
-	public void testExample1Wfs110() throws Exception {
-		URL example1 = this.getClass().getResource(EXAMPLE1WFS110);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(example1);
+	public void testkvpStreamWfs110() throws Exception {
+		InputStream kvpStream = this.getClass().getResourceAsStream(EXAMPLE1WFS110);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse(kvpMap);
 		assertEquals(new BigInteger("60"), getFeatureWL.getExpiryInSeconds());
 	}
 
 	@Test
-	public void testExample1Wfs200() throws Exception {
-		URL example1 = this.getClass().getResource(EXAMPLE1WFS200);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(example1);
+	public void testkvpStreamWfs200() throws Exception {
+		InputStream kvpStream = this.getClass().getResourceAsStream(EXAMPLE1WFS200);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse(kvpMap);
 		assertNull(getFeatureWL.getExpiryInSeconds());
@@ -79,8 +80,8 @@ public class GetFeatureWithLockKVPAdapterTest extends TestCase {
 
 	@Test
 	public void testExample2Wfs200() throws Exception {
-		URL example2 = this.getClass().getResource(EXAMPLE2WFS200);
-		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(example2);
+		InputStream kvpStream = this.getClass().getResourceAsStream(EXAMPLE2WFS200);
+		Map<String, String> kvpMap = readFileIntoMap(kvpStream);
 
 		GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse(kvpMap);
 		assertEquals(new BigInteger("300"), getFeatureWL.getExpiryInSeconds());

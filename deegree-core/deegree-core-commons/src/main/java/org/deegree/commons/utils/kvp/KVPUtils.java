@@ -307,55 +307,6 @@ public class KVPUtils {
 	}
 
 	/**
-	 * Reads a text file with KVP content into a map.
-	 * <p>
-	 * Example contents:
-	 *
-	 * <pre>
-	 * SERVICE=WFS
-	 * VERSION=1.1.0
-	 * REQUEST=DescribeFeatureType
-	 * TYPENAME=TreesA_1M
-	 * </pre>
-	 *
-	 * What this method does:
-	 * <ul>
-	 * <li>Every line is split around the '=' character, the first part is used as the
-	 * key, the second part as the value (if the line doesn't contain a '=', it is
-	 * ignored).</li>
-	 * <li>Keys are uppercased.</li>
-	 * <li>Values are URL decoded.</li>
-	 * </ul>
-	 * @param url url of the text file
-	 * @return map with the contents of the file, keys are uppercase
-	 * @throws IOException if the file cannot be loaded
-	 */
-	public static Map<String, String> readFileIntoMap(URL url) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-
-		String line = null;
-		Map<String, String> params = new HashMap<String, String>();
-		while ((line = reader.readLine()) != null) {
-			if (line.contains("=")) {
-				String[] parts = line.split("=");
-				if (parts[0].equalsIgnoreCase("FILTER")) {
-					params.put("FILTER", URLDecoder.decode(line.substring(7), "UTF-8"));
-				}
-				else if (parts[0].equalsIgnoreCase("NAMESPACE")) {
-					params.put("NAMESPACE", line.substring(10));
-				}
-				else if (parts.length == 2) {
-					params.put(parts[0].toUpperCase(), URLDecoder.decode(parts[1], "UTF-8"));
-				}
-				else {
-					throw new IllegalArgumentException();
-				}
-			}
-		}
-		return params;
-	}
-
-	/**
 	 * @param queryString
 	 * @param encoding used for decoding the URL-decoded characters, may be
 	 * <code>null</code> (turns on guessing, don't do it)

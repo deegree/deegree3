@@ -36,17 +36,15 @@
 package org.deegree.protocol.wfs.describefeaturetype.kvp;
 
 import static javax.xml.namespace.QName.valueOf;
-import static org.deegree.commons.utils.kvp.KVPUtils.readFileIntoMap;
+import static org.deegree.protocol.wfs.KvpTestUtils.readFileIntoMap;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.deegree.protocol.wfs.describefeaturetype.kvp.DescribeFeatureTypeKVPAdapter.parse;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import junit.framework.TestCase;
-
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.junit.Test;
@@ -61,7 +59,7 @@ public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test110Example1() throws IOException {
-		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResource("wfs110/example1.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs110/example1.kvp"));
 		DescribeFeatureType dft = parse(kvpParams);
 		assertEquals(dft.getHandle(), null);
 		assertEquals(dft.getOutputFormat(), null);
@@ -72,7 +70,7 @@ public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test110Example2() throws IOException {
-		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResource("wfs110/example2.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs110/example2.kvp"));
 		DescribeFeatureType dft = parse(kvpParams);
 		assertEquals(dft.getHandle(), null);
 		assertEquals(dft.getOutputFormat(), null);
@@ -84,7 +82,7 @@ public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example1() throws IOException {
-		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResource("wfs200/example1.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example1.kvp"));
 		DescribeFeatureType dft = parse(kvpParams);
 		assertEquals(VERSION_200, dft.getVersion());
 		assertEquals(null, dft.getHandle());
@@ -95,7 +93,7 @@ public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
 
 	@Test
 	public void test200Example2() throws IOException {
-		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResource("wfs200/example2.kvp"));
+		Map<String, String> kvpParams = readFileIntoMap(this.getClass().getResourceAsStream("wfs200/example2.kvp"));
 		DescribeFeatureType dft = parse(kvpParams);
 		assertEquals(VERSION_200, dft.getVersion());
 		assertEquals(null, dft.getHandle());
