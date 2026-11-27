@@ -22,14 +22,13 @@
 package org.deegree.tools.featurestoresql.config;
 
 import org.deegree.feature.types.AppSchema;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.step.builder.SimpleStepBuilder;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -84,8 +83,7 @@ public class SqlFeatureStoreConfigCreatorConfiguration {
 	@Bean
 	public Step step(AppSchemaReader appSchemaReader, FeatureStoreConfigWriter featureStoreConfigWriter,
 			JobRepository jobRepository, JdbcTransactionManager transactionManager) {
-		StepBuilder stepBuilder = new StepBuilder("featureStoreConfigLoaderStep", jobRepository);
-		return new SimpleStepBuilder<AppSchema, AppSchema>(stepBuilder).<AppSchema, AppSchema>chunk(1)
+		return new StepBuilder("featureStoreConfigLoaderStep", jobRepository).<AppSchema, AppSchema>chunk(1)
 			.transactionManager(transactionManager)
 			.reader(appSchemaReader)
 			.writer(featureStoreConfigWriter)

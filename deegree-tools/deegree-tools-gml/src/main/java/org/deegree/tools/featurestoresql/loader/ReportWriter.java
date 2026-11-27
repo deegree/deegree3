@@ -24,9 +24,9 @@ package org.deegree.tools.featurestoresql.loader;
 
 import org.slf4j.Logger;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.listener.JobExecutionListenerSupport;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.listener.JobExecutionListener;
+import org.springframework.batch.core.step.StepExecution;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -49,7 +49,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
-public class ReportWriter extends JobExecutionListenerSupport {
+public class ReportWriter implements JobExecutionListener {
 
 	private static final Logger LOG = getLogger(ReportWriter.class);
 

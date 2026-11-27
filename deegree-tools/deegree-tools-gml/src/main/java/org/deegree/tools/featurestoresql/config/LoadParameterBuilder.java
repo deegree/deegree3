@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -146,7 +146,7 @@ public class LoadParameterBuilder {
 	public LoadParameterBuilder setReferenceData(String referenceData) {
 		if (referenceData != null && !referenceData.isEmpty()) {
 			try {
-				URL referenceDataUrl = Paths.get(referenceData).toUri().toURL();
+				URL referenceDataUrl = Path.of(referenceData).toUri().toURL();
 				GmlReferenceData gmlReferenceData = new GmlReferenceData(referenceDataUrl);
 				loadParameter.setReferenceData(gmlReferenceData);
 			}

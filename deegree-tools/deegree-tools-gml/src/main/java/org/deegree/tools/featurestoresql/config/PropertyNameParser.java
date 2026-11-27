@@ -28,7 +28,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +55,7 @@ public class PropertyNameParser {
 	 * could not be parsed or empty if no properties are parseable
 	 */
 	public List<QName> parsePropertiesWithPrimitiveHref(String pathToFile) {
-		Path path = Paths.get(pathToFile);
+		Path path = Path.of(pathToFile);
 		return parsePropertiesWithPrimitiveHref(path);
 	}
 
@@ -69,7 +68,7 @@ public class PropertyNameParser {
 	 * could not be parsed or empty if no properties are parseable
 	 */
 	public List<QName> parsePropertiesWithPrimitiveHref(URI pathToFile) {
-		Path path = Paths.get(pathToFile);
+		Path path = Path.of(pathToFile);
 		return parsePropertiesWithPrimitiveHref(path);
 	}
 
