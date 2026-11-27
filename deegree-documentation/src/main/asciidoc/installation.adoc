@@ -126,6 +126,26 @@ applications we recommend to follow the
 https://docs.oracle.com/en/java/javase/17/security/index.html[Java Security Guidelines] and for
 https://tomcat.apache.org/tomcat-10.1-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]
 
+==== Running deegree behind a gateway
+
+Use a reverse proxy or API gateway. Do not expose your deegree instance directly to the internet. Configure your
+servlet container to bind only to a local network interface.
+
+By using a software package such as NGINX, Apache httpd or Traefik as gateway, you benefit from the additional security
+scrutiny these products receive and their smaller attack surface. Also, many security features a secure production
+environment requires (e.g. TLS termination, logging, request filtering) are much more sophisticated than their
+equivalents in a Java servlet container.
+
+If you have to deploy the REST API or the console in your production environment you should only expose `/services`
+and `/resources` to the internet.
+
+=== Restricting the runtime environment
+
+Security can be further enhanced by limiting the runtime environment deegree is running in. Only allow outgoing
+network connections that are required (e.g. database access) for normal operation. Limit the attack surface by isolating
+the deegree installation in a dedicated VM or container. Do not install additional software on the same system deegree
+is running.
+
 [[anchor-deegree-webapps]]
 ==== deegree webservices basic and minimal webapps
 
