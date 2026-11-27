@@ -242,6 +242,11 @@
           <artifactId>jetty-ee10-maven-plugin</artifactId>
           <version>12.1.15</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.7.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
