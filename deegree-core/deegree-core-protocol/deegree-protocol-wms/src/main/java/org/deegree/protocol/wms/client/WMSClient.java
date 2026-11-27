@@ -94,6 +94,8 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.featureinfo.parsing.DefaultFeatureInfoParser;
@@ -304,7 +306,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 				if (timeoutInSeconds == -1) {
 					return worker.call();
 				}
-				return Executor.getInstance().performSynchronously(worker, timeoutInSeconds * 1000);
+				return Executor.getInstance().performSynchronously(worker, timeoutInSeconds * 1000L);
 			}
 			catch (Throwable e) {
 				throw new IOException(e.getMessage(), e);
@@ -326,7 +328,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 	 * @throws XMLStreamException
 	 */
 	public FeatureCollection doGetFeatureInfo(GetFeatureInfo request, Map<String, String> hardParams)
-			throws IOException, OWSExceptionReport, XMLStreamException {
+			throws IOException, OWSExceptionReport, XMLStreamException, TransformationException, UnknownCRSException {
 		return doGetFeatureInfo(request, hardParams, new DefaultFeatureInfoParser());
 	}
 
@@ -344,9 +346,10 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 	 * @throws XMLStreamException
 	 */
 	public FeatureCollection doGetFeatureInfo(GetFeatureInfo request, Map<String, String> hardParams,
-			FeatureInfoParser featureInfoParser) throws IOException, OWSExceptionReport, XMLStreamException {
+			FeatureInfoParser featureInfoParser)
+			throws IOException, OWSExceptionReport, XMLStreamException, TransformationException, UnknownCRSException {
 
-		Map<String, String> params = buildGetFeatureInfoParamMap(request, hardParams);
+		Map<String, String> params = buildGetFeatureInfoParamMap(request);
 		overrideHardParams(params, hardParams);
 
 		OwsHttpResponse response = null;
@@ -365,7 +368,12 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 		}
 	}
 
-	private Map<String, String> buildGetFeatureInfoParamMap(GetFeatureInfo gfi, Map<String, String> hardParams) {
+	private Map<String, String> buildGetFeatureInfoParamMap(GetFeatureInfo gfi)
+			throws TransformationException, UnknownCRSException {
+
+		TransformedBboxResult transformedBboxResult = transformBboxIfRequired(gfi.getWidth(), gfi.getHeight(),
+				gfi.getX(), gfi.getY(), gfi.getEnvelope(), gfi.getCoordinateSystem());
+
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("request", "GetFeatureInfo");
 		params.put("version", wmsVersion.toString());
@@ -374,14 +382,14 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 		params.put("layers", csvLayerNames);
 		params.put("query_layers", csvLayerNames);
 		params.put("styles", "");
-		params.put("width", Integer.toString(gfi.getWidth()));
-		params.put("height", Integer.toString(gfi.getHeight()));
+		params.put("width", Integer.toString(transformedBboxResult.width));
+		params.put("height", Integer.toString(transformedBboxResult.height));
 		params.put("format", getFormats(GetMap).getFirst());
 		params.put("feature_count", Integer.toString(gfi.getFeatureCount()));
 
 		if (wmsVersion.equals(VERSION_111)) {
-			params.put("x", Integer.toString(gfi.getX()));
-			params.put("y", Integer.toString(gfi.getY()));
+			params.put("x", Integer.toString(transformedBboxResult.x));
+			params.put("y", Integer.toString(transformedBboxResult.y));
 			params.put("srs", gfi.getCoordinateSystem().getAlias());
 			String fmt = "text/xml";
 			LinkedList<String> fmts = getFormats(WMSRequestType.GetFeatureInfo);
@@ -389,13 +397,13 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 				fmt = "application/vnd.ogc.gml";
 			}
 			params.put("info_format", fmt);
-			Envelope bbox = gfi.getEnvelope();
+			Envelope bbox = transformedBboxResult.reqEnv;
 			params.put("bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
 					+ bbox.getMax().get1());
 		}
 		else {
-			params.put("i", Integer.toString(gfi.getX()));
-			params.put("j", Integer.toString(gfi.getY()));
+			params.put("i", Integer.toString(transformedBboxResult.x));
+			params.put("j", Integer.toString(transformedBboxResult.y));
 			params.put("crs", gfi.getCoordinateSystem().getAlias());
 			String fmt = "text/xml";
 			LinkedList<String> fmts = getFormats(WMSRequestType.GetFeatureInfo);
@@ -403,7 +411,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 				fmt = "application/vnd.ogc.gml";
 			}
 			params.put("info_format", fmt);
-			Envelope bbox = gfi.getEnvelope();
+			Envelope bbox = transformedBboxResult.reqEnv;
 			if (axisFlipped(bbox.getCoordinateSystem())) {
 				params.put("bbox", bbox.getMin().get0() + "," + bbox.getMin().get1() + "," + bbox.getMax().get0() + ","
 						+ bbox.getMax().get1());
@@ -436,27 +444,27 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
 	private class Worker implements Callable<Pair<BufferedImage, String>> {
 
-		private List<LayerRef> layers;
+		private final List<LayerRef> layers;
 
-		private List<StyleRef> styles;
+		private final List<StyleRef> styles;
 
-		private int width;
+		private final int width;
 
-		private int height;
+		private final int height;
 
-		private Envelope bbox;
+		private final Envelope bbox;
 
-		private ICRS srs;
+		private final ICRS srs;
 
-		private String format;
+		private final String format;
 
-		private boolean transparent;
+		private final boolean transparent;
 
-		private boolean errorsInImage;
+		private final boolean errorsInImage;
 
-		private boolean validate;
+		private final boolean validate;
 
-		private List<String> validationErrors;
+		private final List<String> validationErrors;
 
 		private final Map<String, String> hardParameters;
 
@@ -502,24 +510,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 					}
 					// TODO validate srs, width, height, rest, etc
 				}
-
-				Envelope reqEnv = bbox;
-				int reqWidth = width;
-				int reqHeight = height;
-
-				RasterTransformer rtrans = new RasterTransformer(bbox.getCoordinateSystem());
-				if (bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().equals(srs)) {
-					LOG.debug("Transforming bbox {} to {}.", bbox, srs);
-					reqEnv = new GeometryTransformer(srs).transform(bbox);
-
-					double scale = RenderHelper.calcScaleWMS111(width, height, bbox, bbox.getCoordinateSystem());
-					double newScale = RenderHelper.calcScaleWMS111(width, height, reqEnv, CRSManager.getCRSRef(srs));
-					double ratio = scale / newScale;
-
-					reqWidth = abs(round(ratio * width));
-					reqHeight = abs(round(ratio * height));
-				}
-
+				TransformedBboxResult result = transformBboxIfRequired(width, height, bbox, srs);
 				String url = getAddress(GetMap, true);
 				if (url == null) {
 					LOG.warn(get("WMSCLIENT.SERVER_NO_GETMAP_URL"), "Capabilities: ", capaDoc);
@@ -553,10 +544,10 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 					stylesParam = sb.toString();
 				}
 				map.put("styles", stylesParam);
-				map.put("width", Integer.toString(reqWidth));
-				map.put("height", Integer.toString(reqHeight));
-				map.put("bbox", reqEnv.getMin().get0() + "," + reqEnv.getMin().get1() + "," + reqEnv.getMax().get0()
-						+ "," + reqEnv.getMax().get1());
+				map.put("width", Integer.toString(result.width()));
+				map.put("height", Integer.toString(result.height()));
+				map.put("bbox", result.reqEnv().getMin().get0() + "," + result.reqEnv().getMin().get1() + ","
+						+ result.reqEnv().getMax().get0() + "," + result.reqEnv().getMax().get1());
 				String crsParamKey = VERSION_130.equals(wmsVersion) ? "crs" : "srs";
 				map.put(crsParamKey, srs.getAlias());
 				map.put("format", format);
@@ -589,13 +580,15 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 					res.first = img;
 				}
 
-				if (res.first != null && !reqEnv.getCoordinateSystem().equals(bbox.getCoordinateSystem())) {
+				if (res.first != null && !result.reqEnv().getCoordinateSystem().equals(bbox.getCoordinateSystem())) {
 					LOG.debug("Performing raster transformation.");
-					RasterGeoReference env = RasterGeoReference.create(OUTER, reqEnv, reqWidth, reqHeight);
+					RasterGeoReference env = RasterGeoReference.create(OUTER, result.reqEnv(), result.width(),
+							result.height());
 					RasterData data = rasterDataFromImage(res.first);
-					SimpleRaster raster = new SimpleRaster(data, reqEnv, env, null);
+					SimpleRaster raster = new SimpleRaster(data, result.reqEnv(), env, null);
 
-					SimpleRaster transformed = rtrans.transform(raster, bbox, width, height, BILINEAR)
+					SimpleRaster transformed = result.rtrans()
+						.transform(raster, bbox, width, height, BILINEAR)
 						.getAsSimpleRaster();
 
 					res.first = rasterDataToImage(transformed.getRasterData());
@@ -959,6 +952,41 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
 	public int getReadTimeout() {
 		return requestTimeout;
+	}
+
+	private TransformedBboxResult transformBboxIfRequired(int width, int height, Envelope bbox, ICRS srs)
+			throws TransformationException, UnknownCRSException {
+		return transformBboxIfRequired(width, height, -1, -1, bbox, srs);
+	}
+
+	private TransformedBboxResult transformBboxIfRequired(int width, int height, int x, int y, Envelope bbox, ICRS srs)
+			throws TransformationException, UnknownCRSException {
+		Envelope reqEnv = bbox;
+		int reqWidth = width;
+		int reqHeight = height;
+		int reqX = x;
+		int reqY = y;
+
+		RasterTransformer rtrans = new RasterTransformer(bbox.getCoordinateSystem());
+		if (bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().equals(srs)) {
+			LOG.debug("Transforming bbox {} to {}.", bbox, srs);
+			reqEnv = new GeometryTransformer(srs).transform(bbox);
+
+			double scale = RenderHelper.calcScaleWMS111(width, height, bbox, bbox.getCoordinateSystem());
+			double newScale = RenderHelper.calcScaleWMS111(width, height, reqEnv, CRSManager.getCRSRef(srs));
+			double ratio = scale / newScale;
+
+			reqWidth = abs(round(ratio * width));
+			reqHeight = abs(round(ratio * height));
+
+			reqX = abs(round(ratio * x));
+			reqY = abs(round(ratio * y));
+		}
+		return new TransformedBboxResult(reqEnv, reqWidth, reqHeight, reqX, reqY, rtrans);
+	}
+
+	private record TransformedBboxResult(Envelope reqEnv, int width, int height, int x, int y,
+			RasterTransformer rtrans) {
 	}
 
 }
