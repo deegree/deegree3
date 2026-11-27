@@ -109,7 +109,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.7.0</version>
+          <version>3.8.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -167,7 +167,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.12.1</version>
+          <version>3.22.0</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
@@ -446,7 +446,7 @@
       <plugin>
         <groupId>io.spring.javaformat</groupId>
         <artifactId>spring-javaformat-maven-plugin</artifactId>
-        <version>0.0.47</version>
+        <version>0.0.48</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -545,26 +545,9 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy</artifactId>
-        <version>1.9.16</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.objenesis</groupId>
-        <artifactId>objenesis</artifactId>
-        <version>2.6</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.javassist</groupId>
-        <artifactId>javassist</artifactId>
-        <version>3.27.0-GA</version>
-      </dependency>
-      <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-core</artifactId>
-        <version>2.12.0</version>
+        <version>2.14.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -610,7 +593,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.20.0</version>
+        <version>3.22.0</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -835,7 +818,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>12.9</version>
+        <version>12.10</version>
       </dependency>
       <!-- JSON -->
       <dependency>
@@ -1146,7 +1129,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>2.4.240</version>
+        <version>2.5.252</version>
       </dependency>
       <dependency>
         <groupId>org.deegree</groupId>
@@ -1211,7 +1194,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.14.0</version>
+        <version>2.15.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1285,7 +1268,7 @@
     <antlr.version>3.5.3</antlr.version>
     <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
-    <logback.version>1.5.38</logback.version>
+    <logback.version>1.6.8</logback.version>
     <slf4j.version>2.0.20</slf4j.version>
     <spring-boot.version>4.0.9</spring-boot.version>
     <batik.version>1.20</batik.version>
@@ -1328,7 +1311,7 @@
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.10.4.1</version>
+            <version>4.10.5.0</version>
             <configuration>
               <xmlOutput>true</xmlOutput>
               <spotbugsXmlOutput>true</spotbugsXmlOutput>
