@@ -37,20 +37,14 @@ package org.deegree.protocol.wms.ops;
 import static org.deegree.commons.utils.CollectionUtils.unzip;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.commons.utils.StringUtils.splitEscaped;
-import static org.deegree.protocol.wms.ops.SLDParser.parse;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.StringReader;
-import java.net.URL;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-
-import javax.xml.stream.XMLInputFactory;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.StringUtils;
@@ -87,41 +81,8 @@ public abstract class RequestBase {
 	}
 
 	protected void handleSLD(String sld, String sldBody) throws OWSException {
-
-		XMLInputFactory xmlfac = XMLInputFactory.newInstance();
-		Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>> triple = null;
-		if (sld != null) {
-			try {
-				triple = parse(xmlfac.createXMLStreamReader(sld, new URL(sld).openStream()), this);
-			}
-			catch (ParseException e) {
-				LOG.trace("Stack trace:", e);
-				throw new OWSException(
-						"The embedded dimension value in the SLD parameter value was invalid: " + e.getMessage(),
-						"InvalidDimensionValue", "sld");
-			}
-			catch (Throwable e) {
-				LOG.trace("Stack trace:", e);
-				throw new OWSException("Error when parsing the SLD parameter: " + e.getMessage(),
-						"InvalidParameterValue", "sld");
-			}
-		}
-		if (sldBody != null) {
-			try {
-				triple = parse(xmlfac.createXMLStreamReader(new StringReader(sldBody)), this);
-			}
-			catch (ParseException e) {
-				LOG.trace("Stack trace:", e);
-				throw new OWSException(
-						"The embedded dimension value in the SLD_BODY parameter value was invalid: " + e.getMessage(),
-						"InvalidDimensionValue", "sld_body");
-			}
-			catch (Throwable e) {
-				LOG.trace("Stack trace:", e);
-				throw new OWSException("Error when parsing the SLD_BODY parameter: " + e.getMessage(),
-						"InvalidParameterValue", "sld_body");
-			}
-		}
+		Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>> triple = new SldParamRetriever()
+			.handleSldParam(sld, sldBody, this);
 
 		// if layers are referenced, clear the other layers out, else leave all in
 		if (triple != null && !layers.isEmpty()) {
@@ -158,7 +119,7 @@ public abstract class RequestBase {
 			}
 
 			this.styles.clear();
-			this.filters = new LinkedList<OperatorFilter>();
+			this.filters = new LinkedList<>();
 
 			LinkedList<LayerRef> tmpLayers = new LinkedList<LayerRef>();
 
