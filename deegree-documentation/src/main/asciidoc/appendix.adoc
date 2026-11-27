@@ -63,6 +63,12 @@ f
 
 |deegree.workspace.allow-font-loading |java.lang.Boolean |false |Allow font registration on workspace startup (disabled by default).
 
+|deegree.gml.parse.recognize-deprecated-types |java.lang.Boolean |false |When deegree reads application schemas the feature types, not in GML 3.2 namespace with at least one property derived from FeaturePropertyType, are ignored as feature collection. If set to true all feature types with at least one property derived from FeaturePropertyType are recognized as feature collection.
+
+|deegree.commons.xml.schema.enable-audit-logging |java.lang.Boolean |true |Enabled, deegree will log warning messages for each XML schema file that was not redirected to cached one. Be aware this is not a security feature and therefore can not guarantee to log every possible access.
+
+|deegree.commons.xml.schema.block-non-cached-schemas |java.lang.Boolean |false |Blocks resolving to XML schema files that has not already been cached. Be aware this is not a security feature and therefore can not guarantee to block every possible access.
+
 |===
 
 === Interception points
@@ -96,7 +102,7 @@ This chapter is only intended as an entry point to make it easier to reach these
 
 |org.deegree.services.wms.controller.plugins.GetFeatureInfoProvider |org.deegree.services.wms.controller.plugins.DefaultGetFeatureInfoProvider |0..1
 
-|deegree.gml.parse.recognize-deprecated-types |java.lang.Boolean |false |When deegree reads application schemas the feature types, not in GML 3.2 namespace with at least one property derived from FeaturePropertyType, are ignored as feature collection. If set to true all feature types with at least one property derived from FeaturePropertyType are recognized as feature collection.
+|org.deegree.commons.xml.schema.resolver.SchemaResolver |org.deegree.commons.xml.schema.resolver.AuditingSchemaResolver |1..*
 
 |===
 

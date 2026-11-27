@@ -35,15 +35,23 @@
 package org.deegree.commons.xml.schema;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-
+import java.util.Comparator;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
+
 import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
+import org.deegree.commons.xml.schema.resolver.SchemaResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.deegree.commons.xml.schema.resolver.SchemaResolver.META_INF_SCHEMA_CACHE;
 
 /**
  * Xerces entity resolver that performs redirection of requests for OpenGIS core schemas
@@ -55,24 +63,15 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RedirectingEntityResolver.class);
 
-	private static final String OPENGIS_SCHEMAS_URL = "http://schemas.opengis.net/";
-
-	private static final String OASIS_SCHEMAS_URL = "http://docs.oasis-open.org/";
-
-	public static final String INSPIRE_SCHEMAS_URL = "http://inspire.ec.europa.eu/schemas";
-
-	private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
-
-	private static final URL baseURL;
-
-	private static final Pattern HTTP_PATTERN = Pattern.compile("http://");
+	private static final ServiceLoader<SchemaResolver> RESOLVERS = ServiceLoader.load(SchemaResolver.class);
 
 	static {
-		baseURL = RedirectingEntityResolver.class.getResource(ROOT);
+		String testUrl = META_INF_SCHEMA_CACHE + "/schemas.opengis.net";
+		URL baseURL = RedirectingEntityResolver.class.getResource(testUrl);
 		if (baseURL == null) {
-			LOG.warn(
-					"'{}' could not be found on the classpath. Schema references to 'http://schemas.opengis.net' will not be redirected, but fetched from their original location.  ",
-					ROOT);
+			LOG.warn("'{}' could not be found on the classpath. {} {}", baseURL,
+					"Schema references to 'https://schemas.opengis.net' will not be redirected,",
+					"but it will be tried to fetch them from their original location.");
 		}
 	}
 
@@ -82,34 +81,44 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 	 * @return redirected URL, identical to input if it cannot be redirected, never
 	 * <code>null</code>
 	 */
+
 	public String redirect(String systemId) {
-		if (systemId.startsWith(OPENGIS_SCHEMAS_URL)) {
-			String localPart = systemId.substring(OPENGIS_SCHEMAS_URL.length());
-			URL u = RedirectingEntityResolver.class.getResource(ROOT + localPart);
-			if (u != null) {
-				LOG.debug("Local hit: {}", systemId);
-				return u.toString();
+
+		List<SchemaResolver> orderedResolvers = StreamSupport.stream(RESOLVERS.spliterator(), false)
+			.sorted(Comparator.comparingInt(SchemaResolver::getOrder))
+			.toList();
+
+		for (SchemaResolver resolver : orderedResolvers) {
+			systemId = resolver.redirect(systemId);
+		}
+		URL url;
+		try {
+			url = new URL(systemId);
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalArgumentException(
+					"Resolving schema from malformed URL '" + systemId + "' is not possible.", ex);
+		}
+		for (SchemaResolver resolver : orderedResolvers) {
+			URL redirectedSystemId = resolver.resolve(url);
+			if (redirectedSystemId != null) {
+				url = redirectedSystemId;
+				break;
 			}
 		}
-		else if (systemId.startsWith(INSPIRE_SCHEMAS_URL) || systemId.startsWith(OASIS_SCHEMAS_URL)) {
-			return HTTP_PATTERN.matcher(systemId).replaceFirst("https://");
-		}
-		else if (systemId.equals("http://www.w3.org/2001/xml.xsd")) {
-			// workaround for schemas that include the xml base schema...
-			return RedirectingEntityResolver.class.getResource("/w3c/xml.xsd").toString();
-		}
-		else if (systemId.equals("http://www.w3.org/1999/xlink.xsd")) {
-			// workaround for schemas that include the xlink schema...
-			return RedirectingEntityResolver.class.getResource("/w3c/xlink.xsd").toString();
-		}
-		return systemId;
+		return url.toString();
 	}
 
 	@Override
 	public XMLInputSource resolveEntity(XMLResourceIdentifier identifier) throws XNIException, IOException {
-
 		String systemId = identifier.getExpandedSystemId();
-		String redirectedSystemId = systemId != null ? redirect(systemId) : null;
+		String redirectedSystemId;
+		try {
+			redirectedSystemId = systemId != null ? redirect(systemId) : null;
+		}
+		catch (IllegalArgumentException iae) {
+			throw new IOException("Accessing '" + systemId + "' is not allowed", iae);
+		}
 		LOG.debug("'{}' -> '{}'", systemId, redirectedSystemId);
 		return new XMLInputSource(null, redirectedSystemId, null);
 	}

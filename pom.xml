@@ -1204,7 +1204,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
-        <version>20230513</version>
+        <version>20261126</version>
       </dependency>
       <dependency>
         <groupId>jakarta.mail</groupId>
